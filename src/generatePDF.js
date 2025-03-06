@@ -36,7 +36,7 @@ export const generarPDF = (formData) => {
   y += 15;
 
   doc.setFontSize(10);
-  let texto = `Yo, ${formData.nombreSolicitante}, identificado con el cargo de ${formData.cargo}, del departamento ${formData.area}, bajo la dirección de ${formData.encargadoArea}, solicito formalmente el servicio de datos descrito a continuación:`;
+  let texto = `Yo, ${formData.hola}, identificado con el cargo de ${formData.cargo}, del departamento ${formData.area}, bajo la dirección de ${formData.encargadoArea}, solicito formalmente el servicio de datos descrito a continuación:`;
   let splitText = doc.splitTextToSize(texto, 170);
   doc.text(splitText, 20, y,{maxWidth: 170, align: "justify"});
   y += splitText.length * 5;
