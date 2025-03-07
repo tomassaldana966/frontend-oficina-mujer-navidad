@@ -10,15 +10,24 @@ import panoramica2 from "./assets/logos/FOTO_PANORAMICA_SF_2.jpg";
 
 function Formulario() {
   const [formData, setFormData] = useState({
-    nombreSolicitante: "",
-    taller: "",
-    cargo: "",
-    encargadoArea: "",
-    fechaHoy: "",
+    //nombreSolicitante: "",
+    //cargo: "",
+    //encargadoArea: "",
+    //fechaHoy: "",
+    nombre_alumno: "",
+    apellidos_alumno: "",
     edad: "",
     domicilio: "",
-    institucion:"",
-    contacto:"",
+    institucion: "",
+    contacto: "",
+    taller: "",
+    informacion_relevante: "",
+    nombre_apellido_apoderado: "",
+    telefono_apoderado: "",
+    correo_apoderado: "",
+    nombre_contacto_adicional: "",
+    telefono_contacto_adicional: "",
+    informacion_relevante: "",
     peticion: "",
     finalidad: "", // Nuevo campo añadido aquí
     informe: "" , 
@@ -78,14 +87,16 @@ function Formulario() {
   //Indica los campos que son obligatorios para obtener la visuualización del formulario. Además '&&' (es sintaxis) dice que se debe ingresar otro campo. Cuando ya no hay mas campos que agregar entonces no se coloca &&
   const isFormComplete = () => {
     return (
-      formData.nombreSolicitante && 
-      formData.contacto &&  // si comento esto, no podre ingresar info en la interfaz de este botón
-      formData.taller &&
+      //formData.nombreSolicitante && 
+      formData.nombre_alumno &&  
+      formData.apellidos_alumno &&  
       formData.edad &&
       formData.domicilio &&
       formData.institucion &&
+      formData.contacto && 
+      formData.taller &&
       //formData.cargo &&
-      formData.encargadoArea &&
+      //formData.encargadoArea &&
       formData.finalidad &&
       formData.informe &&
       formData.descripcionInforme &&
@@ -127,11 +138,11 @@ function Formulario() {
           {/* Campos del formulario */}
           <div className="w-full px-3 mb-2">
             <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
-              Nombre del solicitante
+              Nombre del alumno 
             </label>
             <input
-              name="nombreSolicitante"
-              value={formData.nombreSolicitante}
+              name="nombre_alumno"
+              value={formData.nombre_alumno}
               onChange={handleChange}
               maxLength={20}  
               className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
@@ -143,6 +154,22 @@ function Formulario() {
           
           <div className="w-full px-3 mb-2">
             <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+              Apellidos del alumno 
+            </label>
+            <input
+              name="apellidos_alumno"
+              value={formData.apellidos_alumno}
+              onChange={handleChange}
+              maxLength={20}  
+              className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
+              type="text"
+              placeholder="Ingrese el nombre y apellido de la persona que este llenando el formulario"
+              required
+            />
+          </div>
+
+          <div className="w-full px-3 mb-2">
+            <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
               Edad
             </label>
             <input
@@ -151,7 +178,9 @@ function Formulario() {
               onChange={handleChange}
               maxLength={20}  
               className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
-              type="text"
+              type="number"
+              min="0"
+              step="1"
               placeholder="Ingrese edad"
               required
             />
@@ -233,47 +262,93 @@ function Formulario() {
           </div>
 
           <div className="w-full px-3 mb-6">
+            <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+              Información relevante (opcional) {/* Nuevo campo añadido aquí */}
+            </label>
+            <textarea
+              name="informacion_relevante"
+              value={formData.informacion_relevante}
+              onChange={handleChange}
+              maxLength={200}  
+              className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+              placeholder="Ingresar información relevante adicional"
+            />
+          </div>
+
+          <div className="w-full px-3 mb-6">
           <div className="w-full justify-between bg-blue-500 text-white text-center py-2 rounded-md shadow-md mb-2">
                 <span className="text-lg font-bold uppercase tracking-wide">Datos del apoderado</span>
           </div>
             <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
-              Encargado del Área
+              Nombre y Apellido del apoderado
             </label>
             <input
-              name="encargadoArea"
-              value={formData.encargadoArea}
+              name="nombre_apellido_apoderado"
+              value={formData.nombre_apellido_apoderado}
               onChange={handleChange}
               className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
               type="text"
-              placeholder="Ingrese el nombre y apellido del encargado del área"
+              placeholder="Ingrese el nombre y apellido del apoderado"
             />
           </div>
           <div className="w-full px-3 mb-6">
             <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
-              Datos Solicitados(En caso de conocerlos)
+              Teléfono del apoderado
             </label>
-            <textarea
-              name="peticion"
-              value={formData.peticion}
-              maxLength={30}  
+            <input
+              name="telefono_apoderado"
+              value={formData.telefono_apoderado} 
               onChange={handleChange}
               className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-              placeholder="Conjunto de datos en relacion al consumo electrico de San Fernando de CAS Chile"
+              type="text"
+              placeholder="Ingrese el telefono del apoderado"
             />
           </div>
+
+          <div className="w-full px-3 mb-2">
+            <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+              Correo del apoderado
+            </label>
+            <input
+              name="correo_apoderado"
+              value={formData.correo_apoderado}
+              onChange={handleChange} 
+              className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
+              type="text"
+              placeholder="Ingrese correo del apoderado"
+              required
+            />
+          </div>
+
+          <div className="w-full px-3 mb-2">
+            <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+              Nombre de un contacto adicional
+            </label>
+            <input
+              name="nombre_contacto_adicional"
+              value={formData.nombre_contacto_adicional}
+              onChange={handleChange} 
+              className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
+              type="text"
+              placeholder="Ingrese el nombre del contacto adicional"
+              required
+            />
+          </div>
+
           <div className="w-full px-3 mb-6">
             <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
-              Finalidad de la Solicitud {/* Nuevo campo añadido aquí */}
+              Teléfono del contacto adicional
             </label>
-            <textarea
-              name="finalidad"
-              value={formData.finalidad}
+            <input
+              name="telefono_contacto_adicional"
+              value={formData.telefono_contacto_adicional} 
               onChange={handleChange}
-              maxLength={100}  
               className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-              placeholder="El analisis solicitado sera para idear un plan de reduccion de consumo en puntos criticos de la ciudad"
+              type="text"
+              placeholder="Ingrese el telefono del contacto adicional"
             />
           </div>
+
           <div className="w-full px-3 mb-6">
             <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
               Informe o Dato en Bruto
@@ -319,12 +394,10 @@ function Formulario() {
           )}
 
           <div className="w-full px-3 mb-6">
-            <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
-              Documentos Adjuntos
-            </label>
-            
-            <div className="flex flex-col">
-              
+            <div className="w-full justify-between bg-blue-500 text-white text-center py-2 rounded-md shadow-md mb-2">
+                <span className="text-lg font-bold uppercase tracking-wide">Documentos adjuntos</span>
+            </div> 
+            <div className="flex flex-col"> 
               <label className="inline-flex items-center mb-2">
                 <input
                   type="checkbox"
