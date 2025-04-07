@@ -1,31 +1,61 @@
-import { useAuth0 } from "@auth0/auth0-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+const CLIENT_ID = "296332455762-948fh8pk35dv3cckqgp23gahsevlfe0d.apps.googleusercontent.com";
+const SCOPES = "https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/documents";
 
 function AuthButtons() {
-  const { logout, isAuthenticated, loginWithRedirect } = useAuth0();
+  const [gapiLoaded, setGapiLoaded] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
 
+  // ✅ Cargar script de gapi
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://apis.google.com/js/api.js";
+    script.onload = () => {
+      window.gapi.load("client:auth2", async () => {
+        await window.gapi.client.init({
+          clientId: CLIENT_ID,
+          scope: SCOPES,
+        });
+        const authInstance = window.gapi.auth2.getAuthInstance();
+        setIsAuthenticated(authInstance.isSignedIn.get());
+        setGapiLoaded(true);
+        authInstance.isSignedIn.listen(setIsAuthenticated);
+        console.log("✅ GAPI inicializado");
+      });
+    };
+    document.body.appendChild(script);
+  }, []);
+
+  // ✅ Acciones
+  const signIn = () => {
+    const authInstance = window.gapi.auth2.getAuthInstance();
+    authInstance.signIn();
+  };
+
+  const signOut = () => {
+    const authInstance = window.gapi.auth2.getAuthInstance();
+    authInstance.signOut();
+  };
+
+  // ✅ DEBUG: siempre mostrar estado
+  console.log("¿Está autenticado?", isAuthenticated);
+
   return (
-    <div className="w-full flex justify-end p-4 relative">
+    <div className="w-full flex justify-end p-4 relative z-50">
       {!isAuthenticated ? (
         <button
           className="bg-blue-500 text-white px-4 py-2 rounded"
-          onClick={() =>
-            loginWithRedirect({
-              prompt: "login",
-              connection: "google-oauth2",
-              screen_hint: "login"
-            })
-          }
+          onClick={signIn}
         >
-          Iniciar Sesión con Google
+          Iniciar sesión con Google
         </button>
       ) : (
         <div className="relative">
-          {/* Botón con icono alineado a la derecha con fondo circular blue-300 */}
           <button
             className="bg-blue-300 p-3 rounded-full hover:bg-blue-400 transition flex items-center justify-center"
-            onClick={() => setShowPopup(!showPopup)} // Toggle del popup
+            onClick={() => setShowPopup(!showPopup)}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -43,19 +73,16 @@ function AuthButtons() {
             </svg>
           </button>
 
-          {/* Popup flotante al hacer clic */}
-            {showPopup && (
-              <div className={`absolute right-0 mt-2 bg-white shadow-lg rounded-lg p-2 w-36 
-                  transition-all duration-300 transform ${showPopup ? "opacity-100 scale-100" : "opacity-0 scale-95"}`}
+          {showPopup && (
+            <div className="absolute right-0 mt-2 bg-white shadow-lg rounded-lg p-2 w-36 transition-all duration-300 transform">
+              <button
+                className="w-full text-left px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
+                onClick={signOut}
               >
-                <button
-                  className="w-full text-left px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
-                  onClick={() => logout({ returnTo: window.location.origin })}
-                >
-                  Cerrar Sesión
-                </button>
-              </div>
-            )}
+                Cerrar Sesión
+              </button>
+            </div>
+          )}
         </div>
       )}
     </div>

@@ -5,6 +5,11 @@ import logo from "./assets/logos/sflogosvg.png";
 import logo4 from "./assets/logos/SF3.jpg";
 import panoramica2 from "./assets/logos/FOTO_PANORAMICA_SF_2.jpg";
 import GuardarEnSheets from "./GuardarEnSheets";
+import { initializeGapi } from "./googleAuth";
+import AuthButtons from "./AuthButtons";
+import { generarFichaDesdePlantilla } from "./generateFicha";
+
+
 
 function Formulario() {
   const [formData, setFormData] = useState({
@@ -32,6 +37,9 @@ function Formulario() {
   const [currentBackground, setCurrentBackground] = useState(panoramica2); // La imagen fija al inicio de la pagina, antes de la rotacion 
   //const logos = [panoramica2]; // estas son las imagenes que van a ir rotando 
   const [isFading, setIsFading] = useState(false);
+
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
 
 // Este es el nuevo handleChange que permite marcar y desmarcar las casillas de los documentos a adjuntar
   
@@ -69,11 +77,58 @@ function Formulario() {
   };
   
   
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    GuardarEnSheets(formData);
-    alert("Datos enviados correctamente");
+  
+    try {
+      // Guardar en Sheets
+      GuardarEnSheets(formData);
+  
+      // Generar documento en Google Docs desde plantilla
+      await generarFichaDesdePlantilla(formData);
+  
+      alert("Datos enviados y documento generado correctamente");
+    } catch (error) {
+      console.error("Error al enviar datos o generar documento:", error);
+      alert("Ocurrió un error al enviar los datos.");
+    }
   };
+  
+  useEffect(() => {
+    console.log("Usuario autenticado:", authInstance.currentUser.get().getBasicProfile().getEmail());
+
+    const script = document.createElement("script");
+    script.src = "https://apis.google.com/js/api.js";
+    script.onload = () => {
+      window.gapi.load("client:auth2", async () => {
+        await window.gapi.client.init({
+          clientId: "296332455762-948fh8pk35dv3cckqgp23gahsevlfe0d.apps.googleusercontent.com",
+          scope: "https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/documents",
+        });
+  
+        // CARGA MANUAL DEL MÓDULO DE DRIVE
+        await window.gapi.client.load("drive", "v3");
+  
+        const authInstance = window.gapi.auth2.getAuthInstance();
+        setIsAuthenticated(authInstance.isSignedIn.get());
+        authInstance.isSignedIn.listen(setIsAuthenticated);
+      });
+    };
+    document.body.appendChild(script);
+  }, []);
+  
+  
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <AuthButtons />
+      </div>
+    );
+  }
+  
+  console.log("Usuario autenticado, renderizando formulario");
+
 
   /*
   const enviarDatos = async (formData) => {
@@ -87,8 +142,11 @@ function Formulario() {
     console.log("Respuesta del servidor:", data);
   };*/
   
-
+  console.log("RENDER!");
   return (
+    <>
+    <AuthButtons />
+    
     <div
       className="min-h-screen flex flex-col items-center justify-center p-4 relative overflow-hidden"
       style={{
@@ -101,14 +159,16 @@ function Formulario() {
       <Toaster />
       
       <div className="w-full max-w-2xl bg-white p-6 rounded-lg shadow-md relative z-10 h-[90vh] overflow-y-auto">
-
+      
         <div className="flex flex-col md:flex-row justify-between items-center bg-gray-200 p-4 mb-6 rounded relative overflow-hidden">
           <div
             className={`absolute inset-0 transition-opacity duration-2000`} // Ajustar duración para la transición de opacidad
           >
             <img src={logo4} className="w-full h-full object-cover" />
             <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-transparent opacity-50"></div>
+            
           </div>
+          
 
           <div className="relative z-10 w-32 h-32 flex items-center justify-center">
             <img src={logo} className="w-full h-full object-contain" />
@@ -425,6 +485,7 @@ function Formulario() {
             </div>
           </div>
 
+
         </div>
 
         {/*
@@ -450,6 +511,7 @@ function Formulario() {
 
       </div>
     </div>
+    </>
   );
 
 }
