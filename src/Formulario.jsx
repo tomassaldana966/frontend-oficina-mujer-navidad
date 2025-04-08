@@ -28,7 +28,6 @@ function Formulario() {
     nombre_contacto_adicional: "",
     telefono_contacto_adicional: "",
     correo_contacto_adicional: "",
-    informacion_relevante: "",
     documento1: false,  // 👈 Ahora es un booleano en vez de una cadena vacía
     documento2: false,  // 👈 Ahora es un booleano en vez de una cadena vacía
     documento3: false,  // 👈 Ahora es un booleano en vez de una cadena vacía
@@ -37,9 +36,6 @@ function Formulario() {
   const [currentBackground, setCurrentBackground] = useState(panoramica2); // La imagen fija al inicio de la pagina, antes de la rotacion 
   //const logos = [panoramica2]; // estas son las imagenes que van a ir rotando 
   const [isFading, setIsFading] = useState(false);
-
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-
 
 // Este es el nuevo handleChange que permite marcar y desmarcar las casillas de los documentos a adjuntar
   
@@ -94,9 +90,7 @@ function Formulario() {
     }
   };
   
-  useEffect(() => {
-    console.log("Usuario autenticado:", authInstance.currentUser.get().getBasicProfile().getEmail());
-
+/*   useEffect(() => {
     const script = document.createElement("script");
     script.src = "https://apis.google.com/js/api.js";
     script.onload = () => {
@@ -106,19 +100,20 @@ function Formulario() {
           scope: "https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/documents",
         });
   
-        // CARGA MANUAL DEL MÓDULO DE DRIVE
-        await window.gapi.client.load("drive", "v3");
-  
         const authInstance = window.gapi.auth2.getAuthInstance();
+  
+        // ✅ Mueve este log aquí
+        console.log("Usuario autenticado:", authInstance.currentUser.get().getBasicProfile().getEmail());
+  
         setIsAuthenticated(authInstance.isSignedIn.get());
         authInstance.isSignedIn.listen(setIsAuthenticated);
       });
     };
     document.body.appendChild(script);
-  }, []);
+  }, []); */
   
   
-
+/* 
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -128,7 +123,7 @@ function Formulario() {
   }
   
   console.log("Usuario autenticado, renderizando formulario");
-
+ */
 
   /*
   const enviarDatos = async (formData) => {
@@ -144,9 +139,7 @@ function Formulario() {
   
   console.log("RENDER!");
   return (
-    <>
-    <AuthButtons />
-    
+    <>    
     <div
       className="min-h-screen flex flex-col items-center justify-center p-4 relative overflow-hidden"
       style={{

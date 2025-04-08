@@ -1,46 +1,24 @@
-import { useEffect, useState } from "react";
-
-const CLIENT_ID = "296332455762-948fh8pk35dv3cckqgp23gahsevlfe0d.apps.googleusercontent.com";
-const SCOPES = "https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/documents";
+// AuthButtons.jsx
+import { useState } from "react";
 
 function AuthButtons() {
-  const [gapiLoaded, setGapiLoaded] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
 
-  // ✅ Cargar script de gapi
-  useEffect(() => {
-    const script = document.createElement("script");
-    script.src = "https://apis.google.com/js/api.js";
-    script.onload = () => {
-      window.gapi.load("client:auth2", async () => {
-        await window.gapi.client.init({
-          clientId: CLIENT_ID,
-          scope: SCOPES,
-        });
-        const authInstance = window.gapi.auth2.getAuthInstance();
-        setIsAuthenticated(authInstance.isSignedIn.get());
-        setGapiLoaded(true);
-        authInstance.isSignedIn.listen(setIsAuthenticated);
-        console.log("✅ GAPI inicializado");
-      });
-    };
-    document.body.appendChild(script);
-  }, []);
+  const authInstance = window.gapi.auth2.getAuthInstance();
 
-  // ✅ Acciones
   const signIn = () => {
-    const authInstance = window.gapi.auth2.getAuthInstance();
     authInstance.signIn();
   };
 
   const signOut = () => {
     const authInstance = window.gapi.auth2.getAuthInstance();
+    authInstance.disconnect(); // ❗ Limpia completamente sesión + permisos
     authInstance.signOut();
   };
+  
+  
 
-  // ✅ DEBUG: siempre mostrar estado
-  console.log("¿Está autenticado?", isAuthenticated);
+  const isAuthenticated = authInstance?.isSignedIn.get();
 
   return (
     <div className="w-full flex justify-end p-4 relative z-50">
