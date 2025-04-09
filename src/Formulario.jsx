@@ -14,7 +14,7 @@ import { generarFichaDesdePlantilla } from "./generateFicha";
 function Formulario() {
   const [formData, setFormData] = useState({
     nombre_alumno: "",
-    apellidos_alumno: "",
+/*     apellidos_alumno: "", */
     edad: "",
     domicilio: "",
     genero: "",
@@ -27,10 +27,10 @@ function Formulario() {
     correo_apoderado: "",
     nombre_contacto_adicional: "",
     telefono_contacto_adicional: "",
-    correo_contacto_adicional: "",
+    correo_contacto_adicional: ""/* ,
     documento1: false,  // 👈 Ahora es un booleano en vez de una cadena vacía
     documento2: false,  // 👈 Ahora es un booleano en vez de una cadena vacía
-    documento3: false,  // 👈 Ahora es un booleano en vez de una cadena vacía
+    documento3: false,  // 👈 Ahora es un booleano en vez de una cadena vacía */
   });
 
   const [currentBackground, setCurrentBackground] = useState(panoramica2); // La imagen fija al inicio de la pagina, antes de la rotacion 
@@ -56,7 +56,7 @@ function Formulario() {
   };
   
   //Indica los campos que son obligatorios para obtener la visuualización del formulario. Además '&&' (es sintaxis) dice que se debe ingresar otro campo. Cuando ya no hay mas campos que agregar entonces no se coloca &&
-  const isFormComplete = () => {
+/*   const isFormComplete = () => {
     return (
       formData.nombre_alumno &&
       formData.apellidos_alumno &&
@@ -70,7 +70,7 @@ function Formulario() {
       formData.telefono_apoderado &&
       formData.correo_apoderado
     );
-  };
+  }; */
   
   
   const handleSubmit = async (e) => {
@@ -438,7 +438,7 @@ function Formulario() {
             />
           </div>
 
-          <div className="w-full px-3 mb-6">
+         {/*  <div className="w-full px-3 mb-6">
             <div className="w-full justify-between bg-blue-500 text-white text-center py-2 rounded-md shadow-md mb-2">
                 <span className="text-lg font-bold uppercase tracking-wide">Documentos adjuntos</span>
             </div> 
@@ -477,7 +477,7 @@ function Formulario() {
               </label>
             </div>
           </div>
-
+ */}
 
         </div>
 
