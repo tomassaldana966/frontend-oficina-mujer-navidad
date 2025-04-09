@@ -1,84 +1,86 @@
 export async function generarFichaDesdePlantilla(formData) {
-  const TEMPLATE_ID = "1SlUiID-3jJRNFu78QtzfNmgJrzobuRo52HuBXRX6JK4";
+  const PDF_TEMPLATE_URL = "/ficha_inscripcion.pdf"; // desde carpeta public
+  const FOLDER_ID = "10E9AijSEz2JoC0rPjkizG1zdiQRhn0wx"; // carpeta en Drive
 
   try {
-    const gapiClient = window.gapi.client;
+    // 1. Descargar el PDF de la carpeta public
+    const response = await fetch(PDF_TEMPLATE_URL);
+    const pdfBlob = await response.blob();
 
-    if (!gapiClient?.drive || !gapiClient?.docs) {
-      console.error("❌ GAPI no está completamente cargado.");
-      throw new Error("GAPI no cargado");
+    if (!pdfBlob || pdfBlob.type !== "application/pdf") {
+      throw new Error("❌ No se pudo obtener el PDF base");
     }
 
-    if (!formData || typeof formData !== "object") {
-      console.error("❌ formData inválido o no proporcionado:", formData);
-      throw new Error("formData inválido");
+    // 2. Leer y rellenar el PDF (requiere PDF-LIB)
+    const { PDFDocument } = await import("pdf-lib");
+    const pdfDoc = await PDFDocument.load(await pdfBlob.arrayBuffer());
+
+    const form = pdfDoc.getForm();
+
+    // 🎯 Asociación manual entre campos PDF y datos
+    const mapeo = {
+      text_1moeg: formData.nombre_alumno,
+      text_tgkbv: formData.edad,
+      text_qxvls: formData.domicilio,
+      text_tcvjd: formData.genero,
+      text_o8ogj: formData.institucion,
+      text_ih9zx: formData.contacto,
+      text_1aq7p: formData.taller,
+      text_gnfdm: formData.informacion_relevante,
+      text_bhztd: formData.nombre_apellido_apoderado,
+      text_p8qdy: formData.telefono_apoderado,
+      text_7q29e: formData.correo_apoderado,
+      text_xrqu9: formData.nombre_contacto_adicional,
+      text_jrrfn: formData.telefono_contacto_adicional,
+      text_ufvty: formData.correo_contacto_adicional,
+    };
+
+    for (const [campo, valor] of Object.entries(mapeo)) {
+      try {
+        form.getTextField(campo).setText(valor || "");
+      } catch (e) {
+        console.warn(`⚠️ Campo PDF '${campo}' no encontrado.`);
+      }
     }
 
-    const nombreAlumno = formData?.nombre_alumno || "SIN_NOMBRE";
-    const apellidosAlumno = formData?.apellidos_alumno || "";
+    form.flatten(); // Opcional: convertir campos en texto plano
 
-    console.log("📂 Iniciando copia de plantilla...");
+    // 3. Generar nuevo PDF como blob
+    const pdfBytes = await pdfDoc.save();
+    const finalBlob = new Blob([pdfBytes], { type: "application/pdf" });
 
-    const copyResponse = await gapiClient.drive.files.copy({
-      fileId: TEMPLATE_ID,
-      supportsAllDrives: true,
-      resource: {
-        name: `Ficha - ${nombreAlumno} ${apellidosAlumno}`,
-      },
-    });
+    // 4. Subir el nuevo PDF a Google Drive
+    const metadata = {
+      name: `Ficha - ${formData.nombre_alumno}.pdf`,
+      mimeType: "application/pdf",
+      parents: [FOLDER_ID],
+    };
 
-    const newDocId = copyResponse.result.id;
-    console.log("✅ Documento copiado:", newDocId);
+    const formDataDrive = new FormData();
+    formDataDrive.append(
+      "metadata",
+      new Blob([JSON.stringify(metadata)], { type: "application/json" })
+    );
+    formDataDrive.append("file", finalBlob);
 
-    // Obtener el documento para extraer los marcadores
-    const docResponse = await gapiClient.docs.documents.get({
-      documentId: newDocId,
-      supportsAllDrives: true,
-    });
+    const uploadResponse = await fetch(
+      "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&supportsAllDrives=true",
+      {
+        method: "POST",
+        headers: new Headers({
+          Authorization: `Bearer ${gapi.auth.getToken().access_token}`,
+        }),
+        body: formDataDrive,
+      }
+    );
 
-    const doc = docResponse.result;
-    const bookmarks = doc.bookmarks || {};
+    const result = await uploadResponse.json();
+    console.log("✅ Documento subido a Drive:", result);
 
-    console.log("📌 Marcadores encontrados:", bookmarks);
-
-    const requests = [];
-
-    // TEST: Usamos el primer marcador encontrado (solo para testear)
-    const marcadorIds = Object.keys(bookmarks);
-    if (marcadorIds.length === 0) {
-      console.warn("⚠️ No se encontraron marcadores en el documento.");
-    } else {
-      const primerMarcadorId = marcadorIds[0];
-      const index = bookmarks[primerMarcadorId].position.index;
-
-      console.log(`🧷 Usando marcador con ID: '${primerMarcadorId}' en el índice ${index}`);
-
-      requests.push({
-        insertText: {
-          location: { index },
-          text: formData.nombre_alumno || "NOMBRE_NO_ENCONTRADO",
-        },
-      });
-    }
-
-    console.log("🛠️ Enviando reemplazo por marcador:", JSON.stringify(requests, null, 2));
-
-    if (requests.length > 0) {
-      await gapiClient.docs.documents.batchUpdate({
-        documentId: newDocId,
-        supportsAllDrives: true,
-        resource: { requests },
-      });
-
-      console.log("✅ Documento actualizado correctamente");
-    } else {
-      console.warn("⚠️ No se enviaron reemplazos porque no se encontraron marcadores.");
-    }
-
-    return `https://docs.google.com/document/d/${newDocId}/edit`;
+    return `https://drive.google.com/file/d/${result.id}/view`;
 
   } catch (error) {
-    console.error("❌ Error generando la ficha:", error.result?.error || error);
+    console.error("❌ Error generando ficha desde PDF:", error);
     throw error;
   }
 }

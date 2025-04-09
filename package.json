@@ -13,6 +13,7 @@
     "autoprefixer": "^10.4.20",
     "gapi-script": "^1.2.0",
     "jspdf": "^2.5.2",
+    "pdf-lib": "^1.17.1",
     "pdfmake": "^0.2.12",
     "postcss": "^8.4.41",
     "react": "^18.3.1",
