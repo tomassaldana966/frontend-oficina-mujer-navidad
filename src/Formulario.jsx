@@ -27,10 +27,10 @@ function Formulario() {
     correo_apoderado: "",
     nombre_contacto_adicional: "",
     telefono_contacto_adicional: "",
-    correo_contacto_adicional: ""/* ,
+    correo_contacto_adicional: "",
     documento1: false,  // 👈 Ahora es un booleano en vez de una cadena vacía
     documento2: false,  // 👈 Ahora es un booleano en vez de una cadena vacía
-    documento3: false,  // 👈 Ahora es un booleano en vez de una cadena vacía */
+    documento3: false,  // 👈 Ahora es un booleano en vez de una cadena vacía
   });
 
   const [currentBackground, setCurrentBackground] = useState(panoramica2); // La imagen fija al inicio de la pagina, antes de la rotacion 
@@ -150,7 +150,7 @@ function Formulario() {
       }}
     >
       <Toaster />
-      
+
       <div className="w-full max-w-2xl bg-white p-6 rounded-lg shadow-md relative z-10 h-[90vh] overflow-y-auto">
       
         <div className="flex flex-col md:flex-row justify-between items-center bg-gray-200 p-4 mb-6 rounded relative overflow-hidden">
@@ -260,8 +260,8 @@ function Formulario() {
             </label>
             <div className="relative">
               <select
-                name="identidad"
-                value={formData.identidad}
+                name="genero"
+                value={formData.genero}
                 onChange={handleChange}
                 className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white"
                 required
@@ -438,7 +438,7 @@ function Formulario() {
             />
           </div>
 
-         {/*  <div className="w-full px-3 mb-6">
+         { <div className="w-full px-3 mb-6">
             <div className="w-full justify-between bg-blue-500 text-white text-center py-2 rounded-md shadow-md mb-2">
                 <span className="text-lg font-bold uppercase tracking-wide">Documentos adjuntos</span>
             </div> 
@@ -451,7 +451,7 @@ function Formulario() {
                   checked={formData.documento1}
                   onChange={handleChange}
                 />
-                <span className="ml-2">Certificado</span>
+                <span className="ml-2">CERTIFICADO RESIDENCIA</span>
               </label>
 
               <label className="inline-flex items-center mb-2">
@@ -462,7 +462,7 @@ function Formulario() {
                   checked={formData.documento2}
                   onChange={handleChange}
                 />
-                <span className="ml-2">Documento 2</span>
+                <span className="ml-2">CERTIFICADO NACIMIENTO</span>
               </label>
 
               <label className="inline-flex items-center mb-2">
@@ -473,11 +473,11 @@ function Formulario() {
                   checked={formData.documento3}
                   onChange={handleChange}
                 />
-                <span className="ml-2">Documento 3</span>
+                <span className="ml-2">DECLARACIÓN JURADA</span>
               </label>
             </div>
           </div>
- */}
+}
 
         </div>
 

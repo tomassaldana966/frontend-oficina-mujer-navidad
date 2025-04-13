@@ -14,36 +14,56 @@ export async function generarFichaDesdePlantilla(formData) {
     // 2. Leer y rellenar el PDF (requiere PDF-LIB)
     const { PDFDocument } = await import("pdf-lib");
     const pdfDoc = await PDFDocument.load(await pdfBlob.arrayBuffer());
-
     const form = pdfDoc.getForm();
 
-    // 🎯 Asociación manual entre campos PDF y datos
-    const mapeo = {
-      text_1moeg: formData.nombre_alumno,
-      text_tgkbv: formData.edad,
-      text_qxvls: formData.domicilio,
-      text_tcvjd: formData.genero,
-      text_o8ogj: formData.institucion,
-      text_ih9zx: formData.contacto,
-      text_1aq7p: formData.taller,
-      text_gnfdm: formData.informacion_relevante,
-      text_bhztd: formData.nombre_apellido_apoderado,
-      text_p8qdy: formData.telefono_apoderado,
-      text_7q29e: formData.correo_apoderado,
-      text_xrqu9: formData.nombre_contacto_adicional,
-      text_jrrfn: formData.telefono_contacto_adicional,
-      text_ufvty: formData.correo_contacto_adicional,
+    // 🎯 Asociación entre campos del formulario y campos PDF
+    const mapeoTexto = {
+      text_2afuq: formData.nombre_alumno,
+      text_3jrhy: formData.edad,
+      text_4rkrt: formData.contacto,
+      text_5phrt: formData.domicilio,
+      text_6vtfk: formData.genero,
+      textarea_8zzra: formData.institucion,
+      textarea_9ekre: formData.informacion_relevante,
+      text_10tjbl: formData.nombre_apellido_apoderado,
+      text_11lvps: formData.telefono_apoderado,
+      text_12xvuk: formData.correo_apoderado,
+      text_13atlg: formData.nombre_contacto_adicional,
+      text_14ldca: formData.telefono_contacto_adicional,
+      text_15yayv: formData.correo_contacto_adicional,
+      text_16by: formData.taller,
     };
 
-    for (const [campo, valor] of Object.entries(mapeo)) {
+    for (const [campo, valor] of Object.entries(mapeoTexto)) {
       try {
         form.getTextField(campo).setText(valor || "");
-      } catch (e) {
-        console.warn(`⚠️ Campo PDF '${campo}' no encontrado.`);
+      } catch {
+        console.warn(`⚠️ Campo de texto '${campo}' no encontrado.`);
       }
     }
 
-    form.flatten(); // Opcional: convertir campos en texto plano
+    // ✅ Asociación de checkboxes
+    const mapeoCheckbox = {
+      checkbox_17qnfm: formData.documento1,
+      checkbox_1vm9s: formData.documento2,
+      checkbox_14gtu1: formData.documento3,
+    };
+
+    for (const [campo, estado] of Object.entries(mapeoCheckbox)) {
+      try {
+        const checkbox = form.getCheckBox(campo);
+        if (estado) {
+          checkbox.check();
+        } else {
+          checkbox.uncheck(); // opcional, por si hay algún caso que venga preseleccionado
+        }
+      } catch {
+        console.warn(`⚠️ Checkbox '${campo}' no encontrado.`);
+      }
+    }
+
+
+    form.flatten(); // Opcional: convierte campos en texto plano
 
     // 3. Generar nuevo PDF como blob
     const pdfBytes = await pdfDoc.save();
