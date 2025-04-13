@@ -43,7 +43,9 @@ function App() {
       >
         <div className="bg-white/30 backdrop-blur-md border border-white/40 shadow-lg rounded-xl p-8 w-full max-w-md text-center space-y-6">
           <h1 className="text-2xl font-semibold text-white drop-shadow">Acceso a la plataforma</h1>
-          <p className="text-gray-100">Inicia sesión con tu cuenta institucional</p>
+          <p className="text-gray-100">Inicia sesión con tu cuenta institucional
+            @munisanfernando.com
+          </p>
           <button
             className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition"
             onClick={() => authInstance.signIn()}
