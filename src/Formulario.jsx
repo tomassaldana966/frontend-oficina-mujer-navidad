@@ -41,10 +41,14 @@ function Formulario() {
   
   const handleChange = (e) => {
     const { name, type, checked, value } = e.target;
-    
+
+    const newValue = type === "checkbox" ? checked : value;
+
+    console.log(`🔍 Cambio detectado: ${name} = ${newValue}`);
+
     setFormData((prevFormData) => ({
-        ...prevFormData,
-        [name]: type === "checkbox" ? checked : value,  // 👈 Maneja checkboxes y inputs de texto
+      ...prevFormData,
+      [name]: newValue,
     }));
   };
 
