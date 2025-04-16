@@ -1,10 +1,9 @@
 import { subirPDFaDrive } from './googleSubida.js';
 
 export async function generarFichaDesdePlantilla(formData) {
-  const PDF_TEMPLATE_URL = "/ficha_inscripcion.pdf"; // desde carpeta public
+  const PDF_TEMPLATE_URL = "/ficha_inscripcion.pdf";
 
   try {
-    // 1. Descargar el PDF desde la carpeta public
     const response = await fetch(PDF_TEMPLATE_URL);
     const pdfBlob = await response.blob();
 
@@ -12,12 +11,15 @@ export async function generarFichaDesdePlantilla(formData) {
       throw new Error("❌ No se pudo obtener el PDF base");
     }
 
-    // 2. Cargar el PDF y preparar el formulario
-    const { PDFDocument } = await import("pdf-lib");
+    const { PDFDocument, StandardFonts, rgb } = await import("pdf-lib");
     const pdfDoc = await PDFDocument.load(await pdfBlob.arrayBuffer());
     const form = pdfDoc.getForm();
+    const page = pdfDoc.getPages()[0];
 
-    // 🎯 Asociación entre campos de texto del formulario y campos PDF
+    // Fuente segura para Unicode (✓)
+    const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+
+    // Asociación de campos de texto
     const mapeoTexto = {
       text_2afuq: formData.nombre_alumno,
       text_3jrhy: formData.edad,
@@ -43,42 +45,33 @@ export async function generarFichaDesdePlantilla(formData) {
       }
     }
 
-    // ✅ Asociación de checkboxes
-    const mapeoCheckbox = {
-      checkbox_17cerm: formData.documento1,
-      checkbox_18ztvs: formData.documento2,
-      checkbox_19txlh: formData.documento3,
-    };
-    
-    for (const [campo, estado] of Object.entries(mapeoCheckbox)) {
-      try {
-        const field = form.getField(campo); // Usamos getField en vez de getCheckBox
-    
-        console.log(`🧪 Campo '${campo}' tipo: ${field.constructor.name}`);
-    
-        if (field.constructor.name === "PDFCheckBox") {
-          if (estado) {
-            field.check();
-          } else {
-            field.uncheck();
-          }
-        } else {
-          console.warn(`⚠️ '${campo}' no es un campo tipo checkbox`);
-        }
-      } catch (e) {
-        console.warn(`❌ Campo '${campo}' no encontrado.`, e);
+    // 📌 Coordenadas estimadas (ajusta si es necesario)
+    const checkCoords = [
+      { x: 40, y: 68, valor: formData.documento1 },  // antes 165
+      { x: 230, y: 68, valor: formData.documento2 },
+      { x: 425, y: 68, valor: formData.documento3 },
+    ];
+
+    // 🖊️ Dibujar ✓ según booleano
+    // 🖊️ Dibujar X como marca en lugar de ✓
+    checkCoords.forEach(({ x, y, valor }) => {
+      if (valor) {
+        page.drawText("X", {
+          x,
+          y,
+          size: 14,
+          font,
+          color: rgb(0, 0, 0),
+        });
       }
-    }
+    });
 
     console.log("📦 Campos PDF disponibles:", form.getFields().map(f => f.getName()));
 
-    // ✅ Flatten solo una vez al final
     form.flatten();
 
-    // 3. Generar el PDF final como Blob
     const pdfBytes = await pdfDoc.save();
     const finalBlob = new Blob([pdfBytes], { type: "application/pdf" });
-
     const nombre_alumno = `Ficha - ${formData.nombre_alumno}`;
     const result = await subirPDFaDrive(finalBlob, nombre_alumno, import.meta.env.VITE_FOLDER_ID);
 
@@ -87,7 +80,7 @@ export async function generarFichaDesdePlantilla(formData) {
     return `https://drive.google.com/file/d/${result.id}/view`;
 
   } catch (error) {
-    console.error("❌ Error generando ficha desde PDF:", error);
+    console.error("❌ Error generando ficha desde PDF:", error.message, error.stack, error);
     throw error;
   }
 }
