@@ -17,12 +17,18 @@ function Formulario() {
     nombre_alumno: "",
 /*     apellidos_alumno: "", */
     edad: "",
+    correo_alumno: "",
+    nacionalidad:"",
+    rut: "",
     domicilio: "",
+    calle: "",
+    numero_casa: "",
     genero: "",
     institucion: "",
     contacto: "",
     taller: "",
     informacion_relevante: "",
+    ano_taller: "",
     nombre_apellido_apoderado: "",
     telefono_apoderado: "",
     correo_apoderado: "",
@@ -38,6 +44,31 @@ function Formulario() {
   //const logos = [panoramica2]; // estas son las imagenes que van a ir rotando 
   const [isFading, setIsFading] = useState(false);
 
+
+
+  function validarRUT(rutCompleto) {
+    rutCompleto = rutCompleto.replace(/[.-]/g, "").toUpperCase();
+  
+    if (!/^\d{7,8}[0-9K]$/.test(rutCompleto)) return false;
+  
+    const cuerpo = rutCompleto.slice(0, -1);
+    const dv = rutCompleto.slice(-1);
+  
+    let suma = 0;
+    let multiplicador = 2;
+  
+    for (let i = cuerpo.length - 1; i >= 0; i--) {
+      suma += parseInt(cuerpo.charAt(i)) * multiplicador;
+      multiplicador = multiplicador < 7 ? multiplicador + 1 : 2;
+    }
+  
+    const dvEsperado = 11 - (suma % 11);
+    const dvCalculado =
+      dvEsperado === 11 ? "0" : dvEsperado === 10 ? "K" : dvEsperado.toString();
+  
+    return dv === dvCalculado;
+  }
+  
 // Este es el nuevo handleChange que permite marcar y desmarcar las casillas de los documentos a adjuntar
   
   const handleChange = (e) => {
@@ -87,70 +118,101 @@ function Formulario() {
   
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Función para validar formato de correo electrónico
+  
+    // Función para validar correo electrónico
     const esCorreoValido = (correo) => {
       const regexCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       return regexCorreo.test(correo);
     };
-
-    // Verificar campos obligatorios
+  
+    // Función para validar RUT chileno
+    const validarRUT = (rutCompleto) => {
+      if (!rutCompleto) return false;
+  
+      rutCompleto = rutCompleto.replace(/[.-]/g, "").toUpperCase();
+      if (!/^\d{7,8}[0-9K]$/.test(rutCompleto)) return false;
+  
+      const cuerpo = rutCompleto.slice(0, -1);
+      const dv = rutCompleto.slice(-1);
+  
+      let suma = 0;
+      let multiplicador = 2;
+      for (let i = cuerpo.length - 1; i >= 0; i--) {
+        suma += parseInt(cuerpo[i]) * multiplicador;
+        multiplicador = multiplicador < 7 ? multiplicador + 1 : 2;
+      }
+  
+      const dvEsperado = 11 - (suma % 11);
+      const dvCalculado = dvEsperado === 11 ? "0" : dvEsperado === 10 ? "K" : dvEsperado.toString();
+  
+      return dv === dvCalculado;
+    };
+  
+    // Validar campos obligatorios
     if (!isFormComplete()) {
       const camposFaltantes = Object.entries(formData)
         .filter(([key, valor]) =>
           [
-            "nombre_alumno",
-            "edad",
-            "domicilio",
-            "genero",
-            "institucion",
-            "contacto",
-            "taller",
-            "nombre_apellido_apoderado",
-            "telefono_apoderado",
-            "correo_apoderado"
+            "nombre_alumno", "edad", "domicilio", "genero", "institucion", "contacto",
+            "ano_taller", "taller", "nombre_apellido_apoderado", "telefono_apoderado", "correo_apoderado", "rut"
           ].includes(key) && !valor
         )
         .map(([key]) => key);
-
+  
       setCamposInvalidos(camposFaltantes);
       setErrorVisible(true);
-
+  
       Swal.fire({
         icon: 'warning',
         title: 'Campos obligatorios incompletos',
         text: 'Por favor completa todos los campos requeridos antes de enviar.',
         confirmButtonColor: '#f27474',
       });
-
+  
       return;
     }
-
-    // Validar formato de correo
+  
+    // Validar correo
     if (!esCorreoValido(formData.correo_apoderado)) {
       setCamposInvalidos(["correo_apoderado"]);
       setErrorVisible(true);
-
+  
       Swal.fire({
         icon: 'error',
         title: 'Correo inválido',
         text: 'El correo del apoderado no tiene un formato válido.',
         confirmButtonColor: '#f27474',
       });
-
+  
       return;
     }
-
+  
+    // Validar RUT
+    if (!validarRUT(formData.rut)) {
+      setCamposInvalidos((prev) => [...new Set([...prev, "rut"])]);
+      setErrorVisible(true);
+  
+      Swal.fire({
+        icon: 'error',
+        title: 'RUT inválido',
+        text: 'El RUT ingresado no es válido. Por favor revísalo.',
+        confirmButtonColor: '#f27474',
+      });
+  
+      return;
+    }
+  
+    // Enviar si todo es válido
     try {
       setIsSubmitting(true);
       setCamposInvalidos([]);
       setErrorVisible(false);
-
+  
       GuardarEnSheets(formData);
       await generarFichaDesdePlantilla(formData);
-
+  
       setIsSubmitting(false);
-
+  
       Swal.fire({
         icon: 'success',
         title: '¡Enviado!',
@@ -158,11 +220,11 @@ function Formulario() {
         confirmButtonColor: '#3085d6',
         confirmButtonText: 'OK',
       });
-
+  
     } catch (error) {
       setIsSubmitting(false);
       console.error("❌ Error al enviar:", error);
-
+  
       Swal.fire({
         icon: 'error',
         title: 'Oops...',
@@ -170,6 +232,7 @@ function Formulario() {
       });
     }
   };
+  
 
   
   
@@ -306,10 +369,93 @@ function Formulario() {
                 <p className="text-red-500 text-xs italic mt-1">Este campo es obligatorio.</p>
               )}
           </div>
+        
+          <div className="w-full px-3 mb-2">
+            <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+              Correo del alumno
+            </label>
+            <input
+              name="correo_alumno"
+              value={formData.correo_alumno}
+              onChange={handleChange} 
+              className={`appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 mb-1 leading-tight focus:outline-none focus:bg-white ${
+                camposInvalidos.includes("nombre_alumno") ? "border-red-500" : "border-gray-200"
+              }`}                
+              type="text"
+              placeholder="Ingrese correo del apoderado"
+              required
+            />
+              {camposInvalidos.includes("correo_alumno") && (
+                <p className="text-red-500 text-xs italic mt-1">Este campo es obligatorio.</p>
+              )}
+          </div>
 
           <div className="w-full px-3 mb-2">
             <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
-              Domicilio
+              NACIONALIDAD DEL ALUMNO
+            </label>
+            <input
+              name="nacionalidad"
+              value={formData.nacionalidad}
+              onChange={handleChange}
+              maxLength={40}  
+              type="text"
+              placeholder="Ingresar la nacionalidad del alumno"
+              required
+              className={`appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 mb-1 leading-tight focus:outline-none focus:bg-white ${
+                camposInvalidos.includes("nombre_alumno") ? "border-red-500" : "border-gray-200"
+              }`}
+            />
+              {camposInvalidos.includes("nombre_alumno") && (
+                <p className="text-red-500 text-xs italic mt-1">Este campo es obligatorio.</p>
+              )}
+          </div>
+
+          <div className="w-full px-3 mb-2">
+            <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+              RUT O PASAPORTE DEL ALUMNO
+            </label>
+            <input
+              name="rut"
+              value={formData.rut}
+              onChange={(e) => {
+                const valor = e.target.value.toUpperCase().replace(/[^0-9Kk.-]/g, "");
+                setFormData((prev) => ({
+                  ...prev,
+                  rut: valor,
+                }));
+              }}
+              onBlur={() => {
+                const esValido = validarRUT(formData.rut);
+                if (!esValido) {
+                  setCamposInvalidos((prev) => [...new Set([...prev, "rut"])]);
+                } else {
+                  setCamposInvalidos((prev) => prev.filter((campo) => campo !== "rut"));
+                }
+              }}
+              maxLength={12}
+              className={`appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 mb-1 leading-tight focus:outline-none focus:bg-white ${
+                camposInvalidos.includes("rut") ? "border-red-500" : "border-gray-200"
+              }`}
+              type="text"
+              placeholder="Ingrese el RUT del alumno (Ej: 12345678-9)"
+              required
+            />
+            {camposInvalidos.includes("rut") && (
+              <p className="text-red-500 text-xs italic mt-1">
+                El RUT ingresado no es válido.
+              </p>
+            )}
+
+            {camposInvalidos.includes("contacto") && (
+              <p className="text-red-500 text-xs italic mt-1">Este campo es obligatorio.</p>
+            )}
+          </div>
+
+
+          <div className="w-full px-3 mb-2">
+            <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+            Nombre de la Villa o Sector
             </label>
             <input
               name="domicilio"
@@ -330,13 +476,55 @@ function Formulario() {
 
           <div className="w-full px-3 mb-2">
             <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+            Calle o Pasaje
+            </label>
+            <input
+              name="calle"
+              value={formData.calle}
+              onChange={handleChange}
+              maxLength={20}  
+              className={`appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 mb-1 leading-tight focus:outline-none focus:bg-white ${
+                camposInvalidos.includes("calle") ? "border-red-500" : "border-gray-200"
+              }`}              
+              type="text"
+              placeholder="Ingrese el nombre de la Calle o Pasaje"
+              required
+            />
+              {camposInvalidos.includes("calle") && (
+                <p className="text-red-500 text-xs italic mt-1">Este campo es obligatorio.</p>
+              )}
+          </div>
+
+          <div className="w-full px-3 mb-2">
+            <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+            Número de Casa o Departamento
+            </label>
+            <input
+              name="numero_casa"
+              value={formData.numero_casa}
+              onChange={handleChange}
+              maxLength={20}  
+              className={`appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 mb-1 leading-tight focus:outline-none focus:bg-white ${
+                camposInvalidos.includes("numero_casa") ? "border-red-500" : "border-gray-200"
+              }`}              
+              type="text"
+              placeholder="Ingrese el numero de su vivienda"
+              required
+            />
+              {camposInvalidos.includes("numero_casa") && (
+                <p className="text-red-500 text-xs italic mt-1">Este campo es obligatorio.</p>
+              )}
+          </div>
+
+          <div className="w-full px-3 mb-2">
+            <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
               Institución educativa a la que pertenece
             </label>
             <input
               name="institucion"
               value={formData.institucion}
               onChange={handleChange}
-              maxLength={20}  
+              maxLength={40}  
               className={`appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 mb-1 leading-tight focus:outline-none focus:bg-white ${
                 camposInvalidos.includes("nombre_alumno") ? "border-red-500" : "border-gray-200"
               }`}                
@@ -482,6 +670,35 @@ function Formulario() {
               placeholder="Ingresar información relevante adicional como por ejemplo, alguna enfermedad cronica, alergia, algun cuidado especial o similares"
             />
           </div>
+
+          <div className="w-full px-3 mb-6">
+            <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+              Año de ejecución del taller
+            </label>
+            <select
+              name="ano_taller"
+              value={formData.ano_taller}
+              onChange={handleChange}
+              className={`appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 mb-1 leading-tight focus:outline-none focus:bg-white ${
+                camposInvalidos.includes("ano_taller") ? "border-red-500" : "border-gray-200"
+              }`}
+              required
+            >
+              <option value="">Seleccione un año</option>
+              {Array.from({ length: 2031 - 2018 }, (_, i) => 2018 + i).map((year) => (
+                <option key={year} value={year}>
+                  {year}
+                </option>
+              ))}
+            </select>
+
+            {camposInvalidos.includes("ano_taller") && (
+              <p className="text-red-500 text-xs italic mt-1">Este campo es obligatorio.</p>
+            )}
+          </div>
+
+
+
 
           <div className="w-full px-3 mb-6">
           <div className="w-full justify-between bg-blue-500 text-white text-center py-2 rounded-md shadow-md mb-2">

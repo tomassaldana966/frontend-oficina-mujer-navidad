@@ -1,5 +1,21 @@
 import { subirPDFaDrive } from './googleSubida.js';
 
+const carpetasPorAno = {
+  "2018": "1_bNUXntK6XeR5wjmNJuncSU-0VPVKbcm",
+  "2019": "17Ru-f1HSdEuqK1uEs-1QvQhEZQXVW6JK",
+  "2020": "1GibEMkP04aAh30qZEJVYYHouNlRchP7l",
+  "2021": "1lJKqlnIb5utWB8irAOs3oReilpMP_x0g",
+  "2022": "1zeZzM4wbiHCIVuxQxTbcEUCeA9SMLXWU",
+  "2023": "1IKN8xEfirFxMPgYw5_bCkncrHd9lft0C",
+  "2024": "1eNHgJlBtEfoeATyR5wye89GcArW5wsLI",
+  "2025": "1cQI5EWCegiUZ_LZR9ut3JmV7Fuqgsn1E",
+  "2026": "1LaqYZTbOac9tIYVA6EZka_c8g177CZwc",
+  "2027": "13pL-2jjeVIZAAHMJ-bhhZJIt_ilRNG7d",
+  "2028": "1V6f1z21NhNkjr34q3KXILrhl-SdbyPgq",
+  "2029": "162bqbBvfO25LJ-IGVO--ET4NwZAp8nQU",
+  "2030": "17P199CsMYEXbi61ezvs2Y5tH1i3QiF8A"
+};
+
 export async function generarFichaDesdePlantilla(formData) {
   const PDF_TEMPLATE_URL = "/ficha_inscripcion.pdf";
 
@@ -15,11 +31,8 @@ export async function generarFichaDesdePlantilla(formData) {
     const pdfDoc = await PDFDocument.load(await pdfBlob.arrayBuffer());
     const form = pdfDoc.getForm();
     const page = pdfDoc.getPages()[0];
-
-    // Fuente segura para Unicode (✓)
     const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
 
-    // Asociación de campos de texto
     const mapeoTexto = {
       text_2afuq: formData.nombre_alumno,
       text_3jrhy: formData.edad,
@@ -45,15 +58,12 @@ export async function generarFichaDesdePlantilla(formData) {
       }
     }
 
-    // 📌 Coordenadas estimadas (ajusta si es necesario)
     const checkCoords = [
-      { x: 40, y: 68, valor: formData.documento1 },  // antes 165
+      { x: 40, y: 68, valor: formData.documento1 },
       { x: 230, y: 68, valor: formData.documento2 },
       { x: 425, y: 68, valor: formData.documento3 },
     ];
 
-    // 🖊️ Dibujar ✓ según booleano
-    // 🖊️ Dibujar X como marca en lugar de ✓
     checkCoords.forEach(({ x, y, valor }) => {
       if (valor) {
         page.drawText("X", {
@@ -72,8 +82,13 @@ export async function generarFichaDesdePlantilla(formData) {
 
     const pdfBytes = await pdfDoc.save();
     const finalBlob = new Blob([pdfBytes], { type: "application/pdf" });
-    const nombre_alumno = `Ficha - ${formData.nombre_alumno}`;
-    const result = await subirPDFaDrive(finalBlob, nombre_alumno, import.meta.env.VITE_FOLDER_ID);
+    const nombre_alumno = `Ficha - ${formData.nombre_alumno} - ${formData.taller}`;
+
+
+    const ano = formData.ano_taller?.toString();
+    const folderId = carpetasPorAno[ano] || import.meta.env.VITE_FOLDER_ID;
+
+    const result = await subirPDFaDrive(finalBlob, nombre_alumno, folderId);
 
     console.log("✅ Documento subido a Drive:", result);
 
