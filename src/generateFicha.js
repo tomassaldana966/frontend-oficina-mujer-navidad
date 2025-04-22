@@ -17,12 +17,11 @@ const carpetasPorAno = {
 };
 
 export async function generarFichaDesdePlantilla(formData) {
-  const PDF_TEMPLATE_URL = "/ficha_inscripcion.pdf";
+  const PDF_TEMPLATE_URL = "/FORMATO_FICHA_INSCRIPCION_TALLERES_CULTURA.pdf";
 
   try {
     const response = await fetch(PDF_TEMPLATE_URL);
     const pdfBlob = await response.blob();
-
     if (!pdfBlob || pdfBlob.type !== "application/pdf") {
       throw new Error("❌ No se pudo obtener el PDF base");
     }
@@ -33,35 +32,42 @@ export async function generarFichaDesdePlantilla(formData) {
     const page = pdfDoc.getPages()[0];
     const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
 
+    const direccionCompleta = `${formData.domicilio}, ${formData.calle}, #${formData.numero_casa}`;
+
     const mapeoTexto = {
-      text_2afuq: formData.nombre_alumno,
-      text_3jrhy: formData.edad,
-      text_4rkrt: formData.contacto,
-      text_5phrt: formData.domicilio,
-      text_6vtfk: formData.genero,
-      textarea_8zzra: formData.institucion,
-      textarea_9ekre: formData.informacion_relevante,
-      text_10tjbl: formData.nombre_apellido_apoderado,
-      text_11lvps: formData.telefono_apoderado,
-      text_12xvuk: formData.correo_apoderado,
-      text_13atlg: formData.nombre_contacto_adicional,
-      text_14ldca: formData.telefono_contacto_adicional,
-      text_15yayv: formData.correo_contacto_adicional,
-      text_16by: formData.taller,
+      text_2harj: formData.nombre_alumno,
+      text_3tqxg: formData.edad,
+      text_4awf: formData.correo_alumno,
+      text_5rtqv: formData.contacto,
+      text_6bmpx: formData.genero,
+      text_7dbe: formData.nacionalidad,
+      text_8evuz: formData.rut,
+      text_9dbxg: direccionCompleta,
+      text_10oep: formData.taller,
+      text_11iwgj: formData.ano_taller,
+      text_12wiqa: formData.nombre_alumno,
+      text_13thsd: formData.informacion_relevante,
+      text_14aaor: formData.nombre_apellido_apoderado,
+      text_15kxhq: formData.telefono_apoderado,
+      text_16kfpy: formData.correo_apoderado,
+      text_17jlee: formData.nombre_contacto_adicional,
+      text_18qxwj: formData.telefono_contacto_adicional,
+      text_20ejj: formData.correo_contacto_adicional
     };
 
     for (const [campo, valor] of Object.entries(mapeoTexto)) {
       try {
         form.getTextField(campo).setText(valor || "");
       } catch {
-        console.warn(`⚠️ Campo de texto '${campo}' no encontrado.`);
+        console.warn(`⚠️ Campo '${campo}' no encontrado.`);
       }
     }
 
+    // Coordenadas para las X en los checkboxes
     const checkCoords = [
-      { x: 40, y: 68, valor: formData.documento1 },
-      { x: 230, y: 68, valor: formData.documento2 },
-      { x: 425, y: 68, valor: formData.documento3 },
+      { x: 25, y: 122, valor: formData.documento1 },
+      { x: 230, y: 122, valor: formData.documento2 },
+      { x: 420, y: 122, valor: formData.documento3 },
     ];
 
     checkCoords.forEach(({ x, y, valor }) => {
@@ -76,20 +82,14 @@ export async function generarFichaDesdePlantilla(formData) {
       }
     });
 
-    console.log("📦 Campos PDF disponibles:", form.getFields().map(f => f.getName()));
-
     form.flatten();
 
     const pdfBytes = await pdfDoc.save();
     const finalBlob = new Blob([pdfBytes], { type: "application/pdf" });
-    const nombre_alumno = `Ficha - ${formData.nombre_alumno} - ${formData.taller}`;
+    const nombreArchivo = `Ficha - ${formData.nombre_alumno} - ${formData.taller}`;
+    const folderId = carpetasPorAno[formData.ano_taller] || import.meta.env.VITE_FOLDER_ID;
 
-
-    const ano = formData.ano_taller?.toString();
-    const folderId = carpetasPorAno[ano] || import.meta.env.VITE_FOLDER_ID;
-
-    const result = await subirPDFaDrive(finalBlob, nombre_alumno, folderId);
-
+    const result = await subirPDFaDrive(finalBlob, nombreArchivo, folderId);
     console.log("✅ Documento subido a Drive:", result);
 
     return `https://drive.google.com/file/d/${result.id}/view`;

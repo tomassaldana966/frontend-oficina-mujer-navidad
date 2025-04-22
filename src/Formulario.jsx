@@ -336,7 +336,8 @@ function Formulario() {
               onChange={handleChange}
               maxLength={40}  
               type="text"
-              placeholder="Ingresar nombres y apellidos del alumno"
+              placeholder="Ej: Juan Esteban Ignacio Rodríguez"
+
               required
               className={`appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 mb-1 leading-tight focus:outline-none focus:bg-white ${
                 camposInvalidos.includes("nombre_alumno") ? "border-red-500" : "border-gray-200"
@@ -362,7 +363,8 @@ function Formulario() {
               type="number"
               min="0"
               step="1"
-              placeholder="Ingrese edad"
+              placeholder="Ej: 12"
+
               required
             />
               {camposInvalidos.includes("edad") && (
@@ -382,7 +384,8 @@ function Formulario() {
                 camposInvalidos.includes("nombre_alumno") ? "border-red-500" : "border-gray-200"
               }`}                
               type="text"
-              placeholder="Ingrese correo del apoderado"
+              placeholder="Ej: apoderado@email.com"
+
               required
             />
               {camposInvalidos.includes("correo_alumno") && (
@@ -400,7 +403,8 @@ function Formulario() {
               onChange={handleChange}
               maxLength={40}  
               type="text"
-              placeholder="Ingresar la nacionalidad del alumno"
+              placeholder="Ej: Chilena, Peruana, Colombiana"
+
               required
               className={`appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 mb-1 leading-tight focus:outline-none focus:bg-white ${
                 camposInvalidos.includes("nombre_alumno") ? "border-red-500" : "border-gray-200"
@@ -466,7 +470,7 @@ function Formulario() {
                 camposInvalidos.includes("nombre_alumno") ? "border-red-500" : "border-gray-200"
               }`}              
               type="text"
-              placeholder="Ingrese dirección de domicilio"
+              placeholder="Ej: Villa Los Alerces"
               required
             />
               {camposInvalidos.includes("domicilio") && (
@@ -487,7 +491,7 @@ function Formulario() {
                 camposInvalidos.includes("calle") ? "border-red-500" : "border-gray-200"
               }`}              
               type="text"
-              placeholder="Ingrese el nombre de la Calle o Pasaje"
+              placeholder="Ej: Calle 5 Sur"
               required
             />
               {camposInvalidos.includes("calle") && (
@@ -508,7 +512,7 @@ function Formulario() {
                 camposInvalidos.includes("numero_casa") ? "border-red-500" : "border-gray-200"
               }`}              
               type="text"
-              placeholder="Ingrese el numero de su vivienda"
+              placeholder="Ej: 123"
               required
             />
               {camposInvalidos.includes("numero_casa") && (
@@ -529,7 +533,8 @@ function Formulario() {
                 camposInvalidos.includes("nombre_alumno") ? "border-red-500" : "border-gray-200"
               }`}                
               type="text"
-              placeholder="Ingrese institución educativa del alumno que figure para el presente año escolar"
+              placeholder="Ej: Escuela Básica San Fernando"
+
               required
             />
               {camposInvalidos.includes("institucion") && (
@@ -556,7 +561,8 @@ function Formulario() {
                 camposInvalidos.includes("contacto") ? "border-red-500" : "border-gray-200"
               }`}
               type="tel"
-              placeholder="Ingrese el teléfono de contacto del alumno"
+              placeholder="Ej: +56 9 1234 5678"
+
               required
             />
             {camposInvalidos.includes("contacto") && (
@@ -667,7 +673,8 @@ function Formulario() {
               onChange={handleChange}
               maxLength={200}  
               className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-              placeholder="Ingresar información relevante adicional como por ejemplo, alguna enfermedad cronica, alergia, algun cuidado especial o similares"
+              placeholder="Ej: Alergia a penicilina, asma, requiere acompañamiento"
+
             />
           </div>
 
@@ -737,7 +744,8 @@ function Formulario() {
               }}
               type="tel"
               maxLength={20}
-              placeholder="Ingrese el teléfono del apoderado"
+              placeholder="Ej: +56 9 12345678"
+
               className={`appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 mb-1 leading-tight focus:outline-none focus:bg-white ${
                 camposInvalidos.includes("telefono_apoderado") ? "border-red-500" : "border-gray-200"
               }`}
@@ -760,7 +768,8 @@ function Formulario() {
                 camposInvalidos.includes("nombre_alumno") ? "border-red-500" : "border-gray-200"
               }`}                
               type="text"
-              placeholder="Ingrese correo del apoderado"
+              placeholder="Ej: apoderado@gmail.com"
+
               required
             />
               {camposInvalidos.includes("correo_apoderado") && (
@@ -788,7 +797,7 @@ function Formulario() {
               Teléfono del contacto adicional
             </label>
             <input
-              name="telefono_contacto_adicional"
+              name="telefono_contacto_adicional(opcional)"
               value={formData.telefono_contacto_adicional}
               onChange={(e) => {
                 const soloNumeros = e.target.value.replace(/\D/g, "");
