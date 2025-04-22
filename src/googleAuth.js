@@ -1,8 +1,5 @@
 import { gapi } from "gapi-script";
-
-const CLIENT_ID = "719483889158-ld3q8vsru8vhmvpko6j595686t0fs2b5.apps.googleusercontent.com";
-// const SCOPES = "https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/documents";
-
+const CLIENT_ID = import.meta.env.VITE_CLIENT_ID
 
 
 

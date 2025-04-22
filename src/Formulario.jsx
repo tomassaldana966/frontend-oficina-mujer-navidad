@@ -44,7 +44,34 @@ function Formulario() {
   //const logos = [panoramica2]; // estas son las imagenes que van a ir rotando 
   const [isFading, setIsFading] = useState(false);
 
-
+  const resetearFormulario = () => {
+    setFormData({
+      nombre_alumno: "",
+      edad: "",
+      correo_alumno: "",
+      nacionalidad: "",
+      rut: "",
+      domicilio: "",
+      calle: "",
+      numero_casa: "",
+      genero: "",
+      institucion: "",
+      contacto: "",
+      taller: "",
+      informacion_relevante: "",
+      ano_taller: "",
+      nombre_apellido_apoderado: "",
+      telefono_apoderado: "",
+      correo_apoderado: "",
+      nombre_contacto_adicional: "",
+      telefono_contacto_adicional: "",
+      correo_contacto_adicional: "",
+      documento1: false,
+      documento2: false,
+      documento3: false,
+    });
+  };
+  
 
   function validarRUT(rutCompleto) {
     rutCompleto = rutCompleto.replace(/[.-]/g, "").toUpperCase();
@@ -220,6 +247,8 @@ function Formulario() {
         confirmButtonColor: '#3085d6',
         confirmButtonText: 'OK',
       });
+      resetearFormulario();
+
   
     } catch (error) {
       setIsSubmitting(false);
@@ -234,55 +263,6 @@ function Formulario() {
   };
   
 
-  
-  
-/*   useEffect(() => {
-    const script = document.createElement("script");
-    script.src = "https://apis.google.com/js/api.js";
-    script.onload = () => {
-      window.gapi.load("client:auth2", async () => {
-        await window.gapi.client.init({
-          clientId: "296332455762-948fh8pk35dv3cckqgp23gahsevlfe0d.apps.googleusercontent.com",
-          scope: "https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/documents",
-        });
-  
-        const authInstance = window.gapi.auth2.getAuthInstance();
-  
-        // ✅ Mueve este log aquí
-        console.log("Usuario autenticado:", authInstance.currentUser.get().getBasicProfile().getEmail());
-  
-        setIsAuthenticated(authInstance.isSignedIn.get());
-        authInstance.isSignedIn.listen(setIsAuthenticated);
-      });
-    };
-    document.body.appendChild(script);
-  }, []); */
-  
-  
-/* 
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <AuthButtons />
-      </div>
-    );
-  }
-  
-  console.log("Usuario autenticado, renderizando formulario");
- */
-
-  /*
-  const enviarDatos = async (formData) => {
-    const response = await fetch("https://script.google.com/macros/s/AKfycbyBHuoDkD_NxWNkHc7udUYGw6f3MfcZYqNxUo7n0BMJnMfl7kmb6Qs5vAHAR8P51EDYKQ/exec", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
-    });
-  
-    const data = await response.json();
-    console.log("Respuesta del servidor:", data);
-  };*/
-  
   console.log("RENDER!");
   return (
     <>    
@@ -868,20 +848,8 @@ function Formulario() {
             </div>
           </div>
 }
-
         </div>
 
-        {/*
-        <button
-          type="button" onClick={handleGeneratePDF}
-          disabled={!isFormComplete()} // ✅ Se deshabilita si falta algún campo obligatorio
-          className={`w-full p-3 rounded mt-4 ${
-            isFormComplete() ? "bg-lime-600 text-white" : "bg-gray-400 text-gray-700 cursor-not-allowed"
-          }`}
-        >
-          Visualizar PDF
-        </button>
-        */}
         {errorVisible && (
           <div className="bg-red-100 text-red-700 border border-red-400 px-4 py-3 rounded mb-4">
             Por favor completa todos los campos obligatorios antes de enviar.

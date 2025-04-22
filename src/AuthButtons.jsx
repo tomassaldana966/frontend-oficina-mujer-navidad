@@ -9,11 +9,10 @@ function AuthButtons() {
   const signIn = () => authInstance.signIn();
 
   const signOut = () => {
-    authInstance.disconnect(); // Limpia completamente sesión + permisos
-    authInstance.signOut();
+    authInstance.signOut(); // ✅ No usamos disconnect()
   };
 
-  if (!isAuthenticated) return null; // Si no está autenticado, no se muestra
+  if (!isAuthenticated) return null;
 
   return (
     <div className="absolute top-4 right-4 z-50">

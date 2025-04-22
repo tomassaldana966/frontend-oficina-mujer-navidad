@@ -1,5 +1,5 @@
 const GuardarEnSheets = async (datosFormulario) => {
-  const url = "https://script.google.com/macros/s/AKfycbwjs-05q6ErkXDeKEbGlE7NyJEWLfDpnbEq-KySj4yUq2Y2RlBTNOsk9QokqOto-fNZdg/exec"; // Reemplaza con tu URL del script de Google Apps
+  const url = import.meta.env.VITE_APPSCRIPT // Reemplaza con tu URL del script de Google Apps
 console.log(JSON.stringify(datosFormulario))
   try {
     const response = await fetch(url, {
