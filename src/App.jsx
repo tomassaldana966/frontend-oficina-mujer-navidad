@@ -10,35 +10,39 @@ const SCOPES = import.meta.env.VITE_SCOPES;
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [gapiLoaded, setGapiLoaded] = useState(false);
+  const [loginError, setLoginError] = useState(false);
 
   useEffect(() => {
     const script = document.createElement("script");
     script.src = "https://apis.google.com/js/api.js";
     script.onload = () => {
       window.gapi.load("client:auth2", async () => {
-        await window.gapi.client.init({
-          clientId: CLIENT_ID,
-          scope: SCOPES,
-        });
+        try {
+          await window.gapi.client.init({
+            clientId: CLIENT_ID,
+            scope: SCOPES,
+          });
 
-        await window.gapi.client.load("drive", "v3");
-        await window.gapi.client.load("docs", "v1");
+          await window.gapi.client.load("drive", "v3");
+          await window.gapi.client.load("docs", "v1");
 
-        const authInstance = window.gapi.auth2.getAuthInstance();
-        setIsAuthenticated(authInstance.isSignedIn.get());
+          const authInstance = window.gapi.auth2.getAuthInstance();
+          setIsAuthenticated(authInstance.isSignedIn.get());
 
-        // Escuchar cambios de sesión
-        authInstance.isSignedIn.listen((isSignedInNow) => {
-          setIsAuthenticated(isSignedInNow);
-        
-          if (isSignedInNow) {
-            // Solo recargar si no venía autenticado antes (refrescar limpio)
-            window.location.reload();
-          }
-        });
-        
+          authInstance.isSignedIn.listen((isSignedInNow) => {
+            setIsAuthenticated(isSignedInNow);
 
-        setGapiLoaded(true);
+            if (isSignedInNow) {
+              window.location.reload();
+            }
+          });
+
+          setGapiLoaded(true);
+        } catch (error) {
+          console.error("Error cargando GAPI:", error);
+          setLoginError(true);
+          setGapiLoaded(true); // Para no quedarse cargando eternamente
+        }
       });
     };
     document.body.appendChild(script);
@@ -75,26 +79,44 @@ function App() {
   const showLoginCard = () => {
     const authInstance = window.gapi.auth2.getAuthInstance();
 
+    const intentarLogin = async () => {
+      try {
+        await authInstance.signIn({ prompt: 'select_account' });
+      } catch (error) {
+        console.error("Error al iniciar sesión:", error);
+        setLoginError(true);
+      }
+    };
+
     return (
       <div
         className="min-h-screen flex items-center justify-center bg-cover bg-center"
         style={{ backgroundImage: `url(${fondo_sf})` }}
       >
         <div className="bg-white/30 backdrop-blur-md border border-white/40 shadow-lg rounded-xl p-8 w-full max-w-md text-center space-y-6">
-          <h1 className="text-2xl font-semibold text-white drop-shadow">Acceso a la plataforma</h1>
-          <p className="text-gray-100">Inicia sesión con tu cuenta institucional @munisanfernando.com</p>
-          <button
-            className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition"
-            onClick={() => {
-              if (!authInstance.isSignedIn.get()) {
-                authInstance.signIn({
-                  prompt: 'select_account'  // ⚠️ evita consent repetido
-                });
-              }
-            }}
-          >
-            Iniciar sesión con Google
-          </button>
+          {loginError ? (
+            <>
+              <h1 className="text-2xl font-semibold text-white drop-shadow">Acceso Denegado</h1>
+              <p className="text-gray-100">Esta cuenta no está autorizada. Por favor selecciona otra cuenta institucional.</p>
+              <button
+                className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition"
+                onClick={intentarLogin}
+              >
+                Cambiar de cuenta
+              </button>
+            </>
+          ) : (
+            <>
+              <h1 className="text-2xl font-semibold text-white drop-shadow">Acceso a la plataforma</h1>
+              <p className="text-gray-100">Inicia sesión con tu cuenta institucional @munisanfernando.com</p>
+              <button
+                className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition"
+                onClick={intentarLogin}
+              >
+                Iniciar sesión con Google
+              </button>
+            </>
+          )}
         </div>
       </div>
     );
