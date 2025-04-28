@@ -1,5 +1,5 @@
 const GuardarEnSheets = async (datosFormulario) => {
-  const url = "https://backend-google-sheets-hbq9n2kqp-tomassaldana966s-projects.vercel.app/api/sendToSheets"; // <- Ahora apuntamos a tu backend en Vercel
+  const url = import.meta.env.VITE_APPSCRIPT
   
   console.log(JSON.stringify(datosFormulario));
 
