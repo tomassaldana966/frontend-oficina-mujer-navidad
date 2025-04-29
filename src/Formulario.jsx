@@ -15,7 +15,7 @@ import Swal from 'sweetalert2';
 function Formulario() {
   const [formData, setFormData] = useState({
     nombre_alumno: "",
-/*     apellidos_alumno: "", */
+/*     apellidos_alumno: "", deploy 1 */
     edad: "",
     correo_alumno: "",
     nacionalidad:"",
