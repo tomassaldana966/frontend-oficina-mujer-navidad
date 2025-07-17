@@ -1,0 +1,56 @@
+{
+"talleres": [
+  { "value": "danza", "label": "Danza" },
+  { "value": "musica", "label": "Música" },
+  { "value": "teatro", "label": "Teatro" }
+],
+  "nacionalidad": [
+    { "value": "chilena", "label": "Chilena" },
+    { "value": "argentina", "label": "Argentina" },
+    { "value": "boliviana", "label": "Boliviana" },
+    { "value": "brasilena", "label": "Brasileña" },
+    { "value": "colombiana", "label": "Colombiana" },
+    { "value": "ecuatoriana", "label": "Ecuatoriana" },
+    { "value": "paraguaya", "label": "Paraguaya" },
+    { "value": "peruana", "label": "Peruana" },
+    { "value": "uruguaya", "label": "Uruguaya" },
+    { "value": "venezolana", "label": "Venezolana" },
+    { "value": "haitiana", "label": "Haitiana" },
+    { "value": "dominicana", "label": "Dominicana" },
+    { "value": "cubana", "label": "Cubana" },
+    { "value": "mexicana", "label": "Mexicana" },
+    { "value": "nicaraguense", "label": "Nicaragüense" },
+    { "value": "hondurena", "label": "Hondureña" },
+    { "value": "costarricense", "label": "Costarricense" },
+    { "value": "guatemalteca", "label": "Guatemalteca" },
+    { "value": "salvadorena", "label": "Salvadoreña" },
+    { "value": "espanola", "label": "Española" },
+    { "value": "estadounidense", "label": "Estadounidense" },
+    { "value": "china", "label": "China" },
+    { "value": "colonia_palestina", "label": "Palestina" },
+    { "value": "otra", "label": "Otra" }
+  ],
+  "escolaridad": [
+    { "value": "sin_escolaridad", "label": "Sin escolaridad" },
+    { "value": "basica_incompleta", "label": "Básica incompleta" },
+    { "value": "basica_completa", "label": "Básica completa" },
+    { "value": "media_incompleta", "label": "Media incompleta" },
+    { "value": "media_completa", "label": "Media completa" },
+    { "value": "tecnica", "label": "Técnica" },
+    { "value": "tecnica_incompleta", "label": "Técnica incompleta " },
+    { "value": "universitaria", "label": "Universitaria" },
+    { "value": "universitaria_incompleta", "label": "Universitaria incompleta" }
+  ],
+  "estadoCivil": [
+    { "value": "soltero", "label": "Soltero/a" },
+    { "value": "casado", "label": "Casado/a" },
+    { "value": "conviviente", "label": "Conviviente" },
+    { "value": "divorciado", "label": "Divorciado/a" },
+    { "value": "viudo", "label": "Viudo/a" }
+  ]
+,
+  "semestre": [
+    { "value": "primer", "label": "Primer semestre" },
+    { "value": "segundo", "label": "Segundo semestre" }
+  ]
+}
