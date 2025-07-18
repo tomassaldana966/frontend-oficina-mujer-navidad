@@ -1,9 +1,9 @@
 {
-"talleres": [
-  { "value": "danza", "label": "Danza" },
-  { "value": "musica", "label": "Música" },
-  { "value": "teatro", "label": "Teatro" }
-],
+  "talleres": [
+    { "value": "danza", "label": "Danza" },
+    { "value": "musica", "label": "Música" },
+    { "value": "teatro", "label": "Teatro" }
+  ],
   "nacionalidad": [
     { "value": "chilena", "label": "Chilena" },
     { "value": "argentina", "label": "Argentina" },
@@ -47,8 +47,7 @@
     { "value": "conviviente", "label": "Conviviente" },
     { "value": "divorciado", "label": "Divorciado/a" },
     { "value": "viudo", "label": "Viudo/a" }
-  ]
-,
+  ],
   "semestre": [
     { "value": "primer", "label": "Primer semestre" },
     { "value": "segundo", "label": "Segundo semestre" }
