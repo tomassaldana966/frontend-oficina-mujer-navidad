@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import AuthButtons from "./AuthButtons";
 import Formulario from "./Formulario";
 import fondo_sf from './assets/logos/FOTO_PANORAMICA_SF_1.jpg';
-
+import { initializeGapi } from "./googleAuth";
 const CLIENT_ID = import.meta.env.VITE_CLIENT_ID;
 const SCOPES = import.meta.env.VITE_SCOPES;
 
@@ -11,7 +11,7 @@ function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [gapiLoaded, setGapiLoaded] = useState(false);
   const [loginError, setLoginError] = useState(false);
-
+initializeGapi()
   useEffect(() => {
     const script = document.createElement("script");
     script.src = "https://apis.google.com/js/api.js";
@@ -124,9 +124,8 @@ function App() {
 
   return (
     <>
-    <Formulario />
-      {/* <AuthButtons />
-      {isAuthenticated ? <Formulario /> : showLoginCard()} */}
+      <AuthButtons />
+      {isAuthenticated ? <Formulario /> : showLoginCard()}
     </>
   );
 }

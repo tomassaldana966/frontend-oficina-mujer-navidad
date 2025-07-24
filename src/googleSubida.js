@@ -1,7 +1,10 @@
 export async function subirPDFaDrive(finalBlob, nombreArchivo, folderId) {
     try {
       const formData = new FormData();
-      formData.append("file", finalBlob, nombreArchivo);
+        const originalName = nombreArchivo.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // Quita tildes
+
+      formData.append("file", finalBlob, originalName);
+      console.log(nombreArchivo)
       formData.append("folderId", folderId);
     
       const response = await fetch(import.meta.env.VITE_UPLOADER_MCCD, {

@@ -2,11 +2,16 @@ import { useState } from "react";
 import logo from "./assets/logos/sflogosvg.png";
 import logo4 from "./assets/logos/SF3.jpg";
 import DtoMujer from "./assets/logos/DtoMujer.svg";
-import MCCDLogo from "./assets/logos/MCCDLogo.svg";
+import infLOGO from "./assets/logos/informatica.svg";
 import panoramica2 from "./assets/logos/mujerTaller3.webp";
 import Swal from "sweetalert2";
 import selects from "./optionsSelect.json";
 import Select from "react-select";
+import { SelectorAno } from "./components/selectorAno";
+import { SelectorFechaNacimiento  } from "./components/selectorFechaNacimiento"
+import GuardarEnSheets from "./GuardarEnSheets";
+import { initializeGapi } from "./googleAuth";
+import { generarFichaDesdePlantilla } from "./generateFicha";
 
 const REQUIRED_FIELDS = [
   "text_nombre_taller",
@@ -25,10 +30,11 @@ const REQUIRED_FIELDS = [
   //no directos
   "text_nombres",
   "text_apellidos",
-  "text_año",
+  //"text_20sknx",
 ];
 
 const Formulario = () => {
+  initializeGapi()
   const [formData, setFormData] = useState({
     text_nombre_taller: "",
     text_monitor: "",
@@ -49,7 +55,7 @@ const Formulario = () => {
     text_derivacion: "",
     text_otros_talleres: "",
     text_semestre: "",
-    text_año: "", //   año
+    text_20sknx: "", //   año
     checkbox_19bqbu: false,
     checkbox_20ddbp: false,
     checkbox_21ybso: false,
@@ -99,7 +105,6 @@ const Formulario = () => {
         newErrors[field] = "Este campo es obligatorio";
       }
     });
-    console.log(newErrors);
     return newErrors;
   };
 
@@ -137,8 +142,8 @@ const Formulario = () => {
       //setCamposInvalidos([]);
       //setErrorVisible(false);
 
-      /*       GuardarEnSheets(formData);
-      await generarFichaDesdePlantilla(formData); */
+      GuardarEnSheets(formData);
+      generarFichaDesdePlantilla(formData);
 
       //setIsSubmitting(false);
 
@@ -162,13 +167,14 @@ const Formulario = () => {
     }
   };
 
-  const renderInput = (id, label, type = "text") => (
+  const renderInput = (id, label, type = "text",placeholder) => (
     <div>
       <label htmlFor={id} className="font-medium">
         {label}
       </label>
       <input
         id={id}
+        placeholder={placeholder}
         name={id}
         type={type}
         value={formData[id]}
@@ -195,7 +201,7 @@ const Formulario = () => {
           handleChange({
             target: {
               name: id,
-              value: selectedOption ? selectedOption.value : "",
+              value: selectedOption ? selectedOption.value : "Chilena",
             },
           })
         }
@@ -267,7 +273,7 @@ const Formulario = () => {
             <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-transparent opacity-50"></div>
           </div>
           <img
-            src={MCCDLogo}
+            src={infLOGO}
             className="p-5 absolute right-4 top-1/2 transform -translate-y-1/2 w-40 max-w-[150px] h-auto object-contain z-10"
           />
           <img
@@ -292,8 +298,15 @@ const Formulario = () => {
 
           <div className="grid grid-cols-1 gap-4">
             {renderSelect("text_nombre_taller", "Taller", selects.talleres)}
-            {renderSelect("text_20sknx", "Año del taller", selects.anos)}
-            {renderInput("text_monitor", "Monitor(a)")}
+
+            <SelectorAno
+              formData={formData}
+              handleChange={handleChange}
+              errors={errors}
+            />
+
+
+            {renderInput("text_monitor", "Monitor(a)","text","Christian Ramos")}
             {renderInput("text_dia", "Día")}
             {renderInput("text_horario", "Horario")}
             {renderSelect("text_semestre", "Semestre", selects.semestre)}
@@ -311,12 +324,35 @@ const Formulario = () => {
                 {"Cédula de Identidad"}
               </label>
               <input
-                onChange={(e) => handleChange(e)}
+                onChange={(e) => {
+                  // Limpiar: permitir solo números y letra K/k
+                  const raw = e.target.value.replace(/[^0-9kK]/g, '').toUpperCase();
+
+                  let cleanedValue = raw;
+
+                  if (raw.length > 1) {
+                    // Separar cuerpo y dígito verificador
+                    const cuerpo = raw.slice(0, -1);
+                    const dv = raw.slice(-1);
+                    cleanedValue = `${cuerpo}-${dv}`;
+                  }
+
+                  handleChange({
+                    target: {
+                      name: "text_cedula",
+                      value: cleanedValue,
+                    }
+                  });
+                }}
+
+
+                
                 id={"text_cedula"}
                 name={"text_cedula"}
+                placeholder="12345678-9"
                 type={"text"}
                 value={formData["text_cedula"]}
-                maxLength={12}
+                maxLength={10}
                 className={`appearance-none block w-full bg-electricViolet-100 text-gray-700 border rounded py-3 px-4 mb-1 leading-tight focus:outline-none focus:bg-white ${
                   errors["text_cedula"] ? "border border-red-500" : ""
                 }`}
@@ -327,16 +363,21 @@ const Formulario = () => {
             </div>
 
             {/* {renderInput("text_cedula", "Cédula de Identidad")} */}
-            {renderInput("text_nombres", "Nombres")}
-            {renderInput("text_apellidos", "Apellidos")}
+            {renderInput("text_nombres", "Nombres","text","Tomás Felipe")}
+            {renderInput("text_apellidos", "Apellidos","text","Saldaña Palominos")}
             {/* {renderInput("text_nombre_completo", "Nombre completo")} */}
             {renderSelect(
               "text_nacionalidad",
               "Nacionalidad",
               selects.nacionalidad
             )}
-            {renderInput("text_fecha_nacimiento", "Fecha de nacimiento")}
-            {renderSelect(
+              <SelectorFechaNacimiento
+              formData={formData}
+              handleChange={handleChange}
+              errors={errors}
+            />
+{/*             {renderInput("text_fecha_nacimiento", "Fecha de nacimiento")}
+ */}            {renderSelect(
               "text_escolaridad",
               "Escolaridad",
               selects.escolaridad
@@ -346,14 +387,15 @@ const Formulario = () => {
               "Estado civil",
               selects.estadoCivil
             )}
-            {renderInput("text_domicilio", "Domicilio")}
-            {renderInput("text_telefono", "Teléfono de contacto")}
+
+            {renderInput("text_domicilio", "Domicilio","text","Argomedo, #123")}
+            {renderInput("text_telefono", "Teléfono de contacto","text","+569 12345678")}
             {renderInput("text_enfermedades", "¿Enfermedad preexistente?")}
             {renderInput("text_discapacidad", "¿Discapacidad?")}
             {renderInput("text_derivacion", "¿Derivación?")}
             {renderInput(
               "text_otros_talleres",
-              "¿Ha recibido otro taller? ¿Cuál/es?"
+              "¿Ha recibido otro taller? ¿Cuál/es?","text","Customizar chaquetas"
             )}
           </div>
 
@@ -384,7 +426,7 @@ const Formulario = () => {
               />
               <span className="ml-2">Registro Social de Hogares</span>
             </label>
-            <label className="inline-flex items-center">
+{/*             <label className="inline-flex items-center">
               <input
                 type="checkbox"
                 name="checkbox_21ybso"
@@ -393,7 +435,7 @@ const Formulario = () => {
                 className="form-checkbox"
               />
               <span className="ml-2">Otro documento</span>
-            </label>
+            </label> */}
           </div>
 
           <div className="flex justify-center mt-6">

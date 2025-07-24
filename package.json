@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "autoprefixer": "^10.4.20",
+    "date-fns": "^4.1.0",
     "gapi-script": "^1.2.0",
     "install": "^0.13.0",
     "jspdf": "^3.0.1",
@@ -19,6 +20,7 @@
     "pdfmake": "^0.2.12",
     "postcss": "^8.4.41",
     "react": "^18.3.1",
+    "react-datepicker": "^8.4.0",
     "react-dom": "^18.3.1",
     "react-hot-toast": "^2.4.1",
     "react-router-dom": "^7.5.0",
