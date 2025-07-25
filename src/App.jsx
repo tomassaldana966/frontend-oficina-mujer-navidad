@@ -124,8 +124,9 @@ initializeGapi()
 
   return (
     <>
-      <AuthButtons />
-      {isAuthenticated ? <Formulario /> : showLoginCard()}
+    <Formulario />
+      {/* <AuthButtons /> */}
+      {/* {isAuthenticated ? <Formulario /> : showLoginCard()} */}
     </>
   );
 }
