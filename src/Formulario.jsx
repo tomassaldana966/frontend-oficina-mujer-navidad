@@ -12,6 +12,7 @@ import { SelectorFechaNacimiento  } from "./components/selectorFechaNacimiento"
 import GuardarEnSheets from "./GuardarEnSheets";
 import { initializeGapi } from "./googleAuth";
 import { generarFichaDesdePlantilla } from "./generateFicha";
+import { useEffect } from "react";
 
 const REQUIRED_FIELDS = [
   "text_nombre_taller",
@@ -55,11 +56,12 @@ const Formulario = () => {
     text_derivacion: "",
     text_otros_talleres: "",
     text_semestre: "",
-    text_20sknx: "", //   año
+    text_20sknx: "2025", //   año
     checkbox_19bqbu: false,
     checkbox_20ddbp: false,
     checkbox_21ybso: false,
   });
+
 
   const [errors, setErrors] = useState({});
 
@@ -390,12 +392,12 @@ const Formulario = () => {
 
             {renderInput("text_domicilio", "Domicilio","text","Argomedo, #123")}
             {renderInput("text_telefono", "Teléfono de contacto","text","+569 12345678")}
-            {renderInput("text_enfermedades", "¿Enfermedad preexistente?")}
-            {renderInput("text_discapacidad", "¿Discapacidad?")}
-            {renderInput("text_derivacion", "¿Derivación?")}
+            {renderInput("text_enfermedades", "¿Enfermedad preexistente? (opcional)")}
+            {renderInput("text_discapacidad", "¿Discapacidad? (opcional)")}
+            {renderInput("text_derivacion", "¿Derivación? (opcional)")}
             {renderInput(
               "text_otros_talleres",
-              "¿Ha recibido otro taller? ¿Cuál/es?","text","Customizar chaquetas"
+              "¿Ha recibido otro taller? ¿Cuál/es? (opcional)","text","Customizar chaquetas"
             )}
           </div>
 

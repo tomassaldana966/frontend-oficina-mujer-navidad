@@ -6,19 +6,33 @@ registerLocale("es", es);
 
 export const SelectorFechaNacimiento = ({ formData, handleChange, errors }) => {
   const id = "text_fecha_nacimiento";
-  const label = "Fecha de nacimiento ";
+  const label = "Fecha de nacimiento";
+
+  const parseLocalDate = (dateString) => {
+    const [year, month, day] = dateString.split("-").map(Number);
+    return new Date(year, month - 1, day);
+  };
 
   const handleDateChange = (date) => {
-    const formatted = date ? date.toISOString().split("T")[0] : "";
+    if (!date) {
+      handleChange({ target: { name: id, value: "" } });
+      return;
+    }
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    const formatted = `${year}-${month}-${day}`; // formato para backend
     handleChange({ target: { name: id, value: formatted } });
   };
 
   return (
     <div>
-      <label htmlFor={id} className="font-medium">{label}</label>
-      <br></br>
+      <label htmlFor={id} className="font-medium">
+        {label}
+      </label>
+      <br />
       <DatePicker
-        selected={formData[id] ? new Date(formData[id]) : null}
+        selected={formData[id] ? parseLocalDate(formData[id]) : null}
         onChange={handleDateChange}
         dateFormat="dd/MM/yyyy"
         locale="es"

@@ -49,9 +49,8 @@ export async function generarFichaDesdePlantilla(formData) {
         text_derivacion: data.text_derivacion || "No",
         text_otros_talleres: data.text_otros_talleres,
         text_semestre: data.text_semestre,
-        text_20sknx: data.text_20sknx.toString() || "2025"
+        text_20sknx: data.text_20sknx.toString() ?? "2025"
       };
-
       for (const [campo, valor] of Object.entries(mapeoTexto)) {
         try {
           form.getTextField(campo).setText(valor || "");
@@ -77,7 +76,7 @@ export async function generarFichaDesdePlantilla(formData) {
       const pdfBytes = await pdfDoc.save();
       return new Blob([pdfBytes], { type: "application/pdf" });
     };
-
+      const annoFinal = formData.text_20sknx.toString() ?? "2025"
     // 1) Generar el PDF para imprimir (con línea de firma)
     const pdfImprimible = await rellenarPlantilla(PDF_TEMPLATE_URL, formData);
     const urlImprimible = URL.createObjectURL(pdfImprimible);
@@ -89,7 +88,7 @@ export async function generarFichaDesdePlantilla(formData) {
     // Subir a Drive
     const nombreCompleto = `${formData.text_nombres} ${formData.text_apellidos}`;
     const nombreArchivo = `Ficha - ${nombreCompleto} - ${formData.text_nombre_taller}`;
-    const folderId = carpetasPorAno[formData.text_20sknx] || import.meta.env.VITE_FOLDER_ID;
+    const folderId = carpetasPorAno[annoFinal] || import.meta.env.VITE_FOLDER_ID;
     const result = await subirPDFaDrive(pdfParaEnviar, nombreArchivo, folderId);
 
     console.log("✅ Documento subido a Drive:", result);
