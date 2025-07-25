@@ -8,7 +8,7 @@ const CLIENT_ID = import.meta.env.VITE_CLIENT_ID;
 const SCOPES = import.meta.env.VITE_SCOPES;
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(true);
   const [gapiLoaded, setGapiLoaded] = useState(false);
   const [loginError, setLoginError] = useState(false);
 initializeGapi()
