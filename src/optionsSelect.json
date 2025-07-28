@@ -1,8 +1,8 @@
 {
   "talleres": [
     { "value": "Ondulación de pestaña y tinte", "label": "Ondulación de pestaña y tinte" },
-    { "value": "Confección de trajes de baños", "label": "Confección de trajes de baños" },
-    { "value": "Confección de ropa de deportiva", "label": "Confección de ropa de deportiva" },
+    { "value": "Confección de trajes de baño y salida de baños", "label": "Confección de trajes de baño y salida de baños" },
+    { "value": "Confección de pijamas y ropa deportiva", "label": "Confección de pijamas y ropa deportiva" },
     { "value": "Pintura en loza y decoupage", "label": "Pintura en loza y decoupage" },
     { "value": "Customizar chaquetas", "label": "Customizar chaquetas" },
     { "value": "Soldadura al arco y Carpintería", "label": "Soldadura al arco y Carpintería" },
@@ -49,7 +49,6 @@
     { "value": "Universitaria", "label": "Universitaria" },
     { "value": "Universitaria incompleta", "label": "Universitaria incompleta" },
     { "value": "Sin información", "label": "Sin información" },
-    { "value": "Separada de hecho", "label": "Separada de hecho" },
     { "value": "Otro", "label": "Otro" }
   ],
   "estadoCivil": [
@@ -57,7 +56,9 @@
     { "value": "Casado/a", "label": "Casado/a" },
     { "value": "Conviviente", "label": "Conviviente" },
     { "value": "Divorciado/a", "label": "Divorciado/a" },
-    { "value": "Viudo/a", "label": "Viudo/a" }
+    { "value": "Viudo/a", "label": "Viudo/a" },
+    { "value": "Separada de hecho", "label": "Separada de hecho" }
+
   ],
   "semestre": [
     { "value": "Primer", "label": "Primer semestre" },
