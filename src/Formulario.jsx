@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import logo from "./assets/logos/sflogosvg.png";
 import logo4 from "./assets/logos/SF3.jpg";
 import DtoMujer from "./assets/logos/DtoMujer.svg";
@@ -12,7 +12,6 @@ import { SelectorFechaNacimiento  } from "./components/selectorFechaNacimiento"
 import GuardarEnSheets from "./GuardarEnSheets";
 import { initializeGapi } from "./googleAuth";
 import { generarFichaDesdePlantilla } from "./generateFicha";
-import { useEffect } from "react";
 
 const REQUIRED_FIELDS = [
   "text_nombre_taller",
@@ -62,6 +61,27 @@ const Formulario = () => {
     checkbox_21ybso: false,
   });
 
+  const [talleres_hoja, setTalleres] = useState([]);
+
+  useEffect(() => {
+    const url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSgRoSlDAGk_575DYTlpnTfuc5OvFI0FDIKuc5Rnda0z6SGDE7sewf_VUUZnmJc9QsDhLUe6LSSkB9V/pub?gid=0&single=true&output=csv"
+      fetch(url)
+            .then((res) => res.text())
+            .then((csvText) => {
+              const rows = csvText
+                .split("\n")
+                .map((row) => row.trim())
+                .filter(Boolean);
+
+              const formatted = rows.map((row) => {
+                const valor = row.split(",")[0].trim();
+                return { value: valor, label: valor };
+              });
+
+              setTalleres(formatted);
+            })
+            .catch(console.error);
+        }, []);
 
   const [errors, setErrors] = useState({});
 
@@ -299,7 +319,7 @@ const Formulario = () => {
           </div>
 
           <div className="grid grid-cols-1 gap-4">
-            {renderSelect("text_nombre_taller", "Taller", selects.talleres)}
+            {renderSelect("text_nombre_taller", "Taller", talleres_hoja)}
 
             <SelectorAno
               formData={formData}
