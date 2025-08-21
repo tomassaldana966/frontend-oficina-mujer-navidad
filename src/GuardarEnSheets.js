@@ -18,7 +18,8 @@ const GuardarEnSheets = async (datosFormulario) => {
     }
 
     const result = await response.json(); // ← aquí recoges lo que devuelve doPost
-    if (result.status !== "success") {
+      const sheetsResponse = JSON.parse(result.respuesta)
+    if (sheetsResponse.status !== "success") {
       throw new Error(`❌ Error en Apps Script: ${result.message}`);
     }
 
