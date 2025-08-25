@@ -20,6 +20,7 @@ const Formulario = () => {
 
     const [formData, setFormData] = useState({});
     const [talleresHoja, setTalleres] = useState([]);
+    const [loading, setLoading] = useState(false); // <-- nuevo estado
 
     // Cargar talleres desde Google Sheets
     useEffect(() => {
@@ -63,6 +64,7 @@ const Formulario = () => {
 
     // Enviar formulario
     const handleFinish = async (values) => {
+        setLoading(true); // activar loading
         try {
             const data = {
                 ...values,
@@ -72,7 +74,7 @@ const Formulario = () => {
                     ? values.text_fecha_nacimiento.format("YYYY-MM-DD")
                     : "",
                 text_20sknx: values.text_20sknx
-                    ? values.text_20sknx.format("YYYY") // <-- solo AÑO
+                    ? values.text_20sknx.format("YYYY") // <-- solo aAÑO
                     : currentYear,
             };
 
@@ -91,6 +93,8 @@ const Formulario = () => {
                 title: "Oops...",
                 text: "Ocurrió un error al enviar los datos o generar el documento.",
             });
+        } finally {
+            setLoading(false); // desactivar loading siempre
         }
     };
         // Opciones para select de años 2020-2030
@@ -229,6 +233,7 @@ const Formulario = () => {
                                 type="primary"
                                 htmlType="submit"
                                 className="bg-electricViolet-500 w-full mt-4"
+                                loading={loading}
                             >
                                 Enviar
                             </Button>
