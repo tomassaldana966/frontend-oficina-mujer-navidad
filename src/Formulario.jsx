@@ -13,7 +13,7 @@ import Swal from "sweetalert2";
 import selects from "./optionsSelect.json";
 import { initializeGapi } from "./googleAuth";
 import GuardarEnSheets from "./GuardarEnSheets";
-import { generarFichaDesdePlantilla } from "./generateFicha";
+/*import { generarFichaDesdePlantilla } from "./generateFicha";*/
 //force deploy vercel
 const Formulario = () => {
     initializeGapi();
@@ -80,7 +80,7 @@ const Formulario = () => {
 
             setFormData(data);
             await GuardarEnSheets(data);
-            await generarFichaDesdePlantilla(data);
+            /*await generarFichaDesdePlantilla(data);*/
             Swal.fire({
                 icon: "success",
                 title: "¡Enviado!",

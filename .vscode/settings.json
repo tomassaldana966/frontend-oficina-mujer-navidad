@@ -1,0 +1,29 @@
+{
+  "workbench.colorCustomizations": {
+    // Azul oscuro para áreas principales
+    "activityBar.background": "#1a2a48",
+    "statusBar.background": "#1a2a48",
+    "breadcrumb.background": "#1a2a48",
+
+    // Azul intermedio para estados activos
+    "activityBar.activeBackground": "#24436e",
+    "tab.activeBackground": "#24436e",
+    "statusBar.debuggingBackground": "#24436e",
+    "statusBar.noFolderBackground": "#24436e",
+
+    // Azul más oscuro para áreas secundarias
+    "minimap.background": "#101d33",
+    "sideBar.background": "#101d33",
+    //"terminal.background": "#101d33",
+
+    // Colores de texto y bordes para contraste
+    "editorLineNumber.foreground": "#5c85ad",
+    "tab.border": "#24436e",
+    "editorCursor.foreground": "#5c85ad",
+    "editor.foreground": "#d4e4f7",
+    "statusBar.foreground": "#d4e4f7",
+    "activityBar.foreground": "#d4e4f7",
+    "titleBar.activeForeground": "#d4e4f7"
+  }
+}
+

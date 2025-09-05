@@ -2,6 +2,8 @@ const GuardarEnSheets = async (datosFormulario) => {
   const url = import.meta.env.VITE_BACKEND_APPSCRIPT;
   console.log("URL DE CALL:", url);
   console.log("Datos a enviar:", datosFormulario);
+  console.log('API:', import.meta.env.VITE_BACKEND_APPSCRIPT);
+
 
   try {
     const response = await fetch(url, {
