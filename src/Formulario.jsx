@@ -2,16 +2,21 @@
 import React, { useState } from 'react';
 import GuardarEnSheets from './GuardarEnSheets';
 
+const BENEFICIARIO_VACIO = {
+  nombreFuncionario: '',
+  apellidoFuncionario: '',
+  apellido2Funcionario: '',
+  nombreHijo: '',
+  sexo: '',
+  edad: '',
+};
+
 export default function Formulario() {
-  // A) Datos generales (solo Dirección en este mini test)
-  const [general, setGeneral] = useState({
-    direccion: '',
-  });
+  // A) Datos generales
+  const [general, setGeneral] = useState({ direccion: '' });
 
   // B) Beneficiarios (lista dinámica)
-  const [beneficiarios, setBeneficiarios] = useState([
-    { nombreFuncionario: '', nombreHijo: '', edad: '' },
-  ]);
+  const [beneficiarios, setBeneficiarios] = useState([{ ...BENEFICIARIO_VACIO }]);
 
   const [enviando, setEnviando] = useState(false);
   const [mensaje, setMensaje] = useState(null);
@@ -31,28 +36,43 @@ export default function Formulario() {
   };
 
   const agregarBeneficiario = () => {
-    setBeneficiarios((prev) => [
-      ...prev,
-      { nombreFuncionario: '', nombreHijo: '', edad: '' },
-    ]);
+    setBeneficiarios((prev) => [...prev, { ...BENEFICIARIO_VACIO }]);
   };
 
+  // Eliminar seguro: si hay 1 solo, limpia; si hay >1, elimina
   const eliminarBeneficiario = (idx) => {
-    setBeneficiarios((prev) => prev.filter((_, i) => i !== idx));
+    if (!confirm('¿Eliminar este beneficiario?')) return;
+
+    setBeneficiarios((prev) => {
+      if (prev.length === 1) {
+        const nuevo = [...prev];
+        nuevo[0] = { ...BENEFICIARIO_VACIO };
+        return nuevo;
+      }
+      return prev.filter((_, i) => i !== idx);
+    });
   };
 
   const validar = () => {
     if (!general.direccion.trim()) return 'La dirección es obligatoria.';
     if (beneficiarios.length === 0) return 'Agrega al menos un beneficiario.';
+
     for (let i = 0; i < beneficiarios.length; i++) {
       const b = beneficiarios[i];
       if (!b.nombreFuncionario.trim())
         return `Beneficiario #${i + 1}: falta el nombre del funcionario.`;
+      if (!b.apellidoFuncionario.trim())
+        return `Beneficiario #${i + 1}: falta el primer apellido del funcionario.`;
+      if (!b.apellido2Funcionario.trim())
+        return `Beneficiario #${i + 1}: falta el segundo apellido del funcionario.`;
       if (!b.nombreHijo.trim())
         return `Beneficiario #${i + 1}: falta el nombre del hijo/a.`;
+      if (!String(b.sexo).trim())
+        return `Beneficiario #${i + 1}: falta el sexo del hijo/a.`;
+
+      const edadNum = Number(b.edad);
       if (!String(b.edad).trim())
         return `Beneficiario #${i + 1}: falta la edad.`;
-      const edadNum = Number(b.edad);
       if (!Number.isFinite(edadNum) || edadNum < 0)
         return `Beneficiario #${i + 1}: la edad no es válida.`;
     }
@@ -73,12 +93,13 @@ export default function Formulario() {
 
     // Armamos el payload que recibirá Apps Script
     const payload = {
-      general: {
-        direccion: general.direccion,
-      },
+      general: { direccion: general.direccion },
       beneficiarios: beneficiarios.map((b) => ({
         nombreFuncionario: b.nombreFuncionario,
+        apellidoFuncionario: b.apellidoFuncionario,
+        apellido2Funcionario: b.apellido2Funcionario,
         nombreHijo: b.nombreHijo,
+        sexo: b.sexo,
         edad: Number(b.edad),
       })),
     };
@@ -87,9 +108,6 @@ export default function Formulario() {
       setEnviando(true);
       const res = await GuardarEnSheets(payload);
       setMensaje(`¡Enviado! (${res.message || 'Guardado con éxito'})`);
-      // Si quieres limpiar el formulario tras enviar:
-      // setGeneral({ direccion: '' });
-      // setBeneficiarios([{ nombreFuncionario: '', nombreHijo: '', edad: '' }]);
     } catch (e2) {
       console.error(e2);
       setError(e2.message || 'Ocurrió un error al enviar.');
@@ -99,9 +117,9 @@ export default function Formulario() {
   };
 
   return (
-    <div style={{ maxWidth: 740, margin: '0 auto', padding: 16 }}>
+    <div style={{ maxWidth: 1080, margin: '0 auto', padding: 16 }}>
       <h1 style={{ fontSize: 22, fontWeight: 700, marginBottom: 12 }}>
-        Formulario Navidad (mini test)
+        Formulario Navidad — Funcionarios
       </h1>
 
       <form onSubmit={onSubmit}>
@@ -125,12 +143,34 @@ export default function Formulario() {
         </fieldset>
 
         {/* B) Beneficiarios */}
-        <fieldset style={{ border: '1px solid #ddd', padding: 16, borderRadius: 8, marginTop: 16 }}>
+        <fieldset
+          style={{
+            border: '1px solid #ddd',
+            padding: 16,
+            borderRadius: 8,
+            marginTop: 16,
+          }}
+        >
           <legend style={{ padding: '0 8px' }}>Beneficiarios</legend>
 
           {beneficiarios.map((b, idx) => (
-            <div key={idx} style={{ border: '1px solid #eee', padding: 12, borderRadius: 8, marginBottom: 12 }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 120px', gap: 12 }}>
+            <div
+              key={idx}
+              style={{
+                border: '1px solid #eee',
+                padding: 12,
+                borderRadius: 8,
+                marginBottom: 12,
+              }}
+            >
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: '1fr 1fr 1fr 1fr 140px 160px',
+                  gap: 12,
+                  alignItems: 'end',
+                }}
+              >
                 <div>
                   <label style={{ display: 'block', fontWeight: 600, marginBottom: 4 }}>
                     Nombre funcionario
@@ -140,7 +180,35 @@ export default function Formulario() {
                     name="nombreFuncionario"
                     value={b.nombreFuncionario}
                     onChange={(e) => onChangeBenef(idx, e)}
-                    placeholder="Ej: Juan Pérez"
+                    placeholder="Ej: Juan"
+                    style={{ width: '100%', padding: 8 }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontWeight: 600, marginBottom: 4 }}>
+                    Primer apellido
+                  </label>
+                  <input
+                    type="text"
+                    name="apellidoFuncionario"
+                    value={b.apellidoFuncionario}
+                    onChange={(e) => onChangeBenef(idx, e)}
+                    placeholder="Ej: Pérez"
+                    style={{ width: '100%', padding: 8 }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontWeight: 600, marginBottom: 4 }}>
+                    Segundo apellido
+                  </label>
+                  <input
+                    type="text"
+                    name="apellido2Funcionario"
+                    value={b.apellido2Funcionario}
+                    onChange={(e) => onChangeBenef(idx, e)}
+                    placeholder="Ej: Cortés"
                     style={{ width: '100%', padding: 8 }}
                   />
                 </div>
@@ -154,7 +222,7 @@ export default function Formulario() {
                     name="nombreHijo"
                     value={b.nombreHijo}
                     onChange={(e) => onChangeBenef(idx, e)}
-                    placeholder="Ej: Ana Pérez"
+                    placeholder="Ej: Ana"
                     style={{ width: '100%', padding: 8 }}
                   />
                 </div>
@@ -173,17 +241,39 @@ export default function Formulario() {
                     style={{ width: '100%', padding: 8 }}
                   />
                 </div>
+
+                <div>
+                  <label style={{ display: 'block', fontWeight: 600, marginBottom: 4 }}>
+                    Sexo del hijo/a
+                  </label>
+                  <select
+                    name="sexo"
+                    value={b.sexo}
+                    onChange={(e) => onChangeBenef(idx, e)}
+                    style={{ width: '100%', padding: 8 }}
+                  >
+                    <option value="">Selecciona…</option>
+                    <option value="Femenino">Femenino</option>
+                    <option value="Masculino">Masculino</option>
+                    <option value="Otro">Otro</option>
+                  </select>
+                </div>
               </div>
 
-              {beneficiarios.length > 1 && (
+              <div style={{ marginTop: 10, display: 'flex', gap: 8 }}>
                 <button
                   type="button"
                   onClick={() => eliminarBeneficiario(idx)}
-                  style={{ marginTop: 8, background: '#eee', padding: '6px 10px', borderRadius: 6 }}
+                  style={{
+                    background: '#fee2e2',
+                    color: '#991b1b',
+                    padding: '6px 10px',
+                    borderRadius: 6,
+                  }}
                 >
                   Eliminar
                 </button>
-              )}
+              </div>
             </div>
           ))}
 
@@ -197,16 +287,8 @@ export default function Formulario() {
         </fieldset>
 
         {/* Mensajes */}
-        {error && (
-          <div style={{ color: '#b00020', marginTop: 12 }}>
-            {error}
-          </div>
-        )}
-        {mensaje && (
-          <div style={{ color: '#0a7b33', marginTop: 12 }}>
-            {mensaje}
-          </div>
-        )}
+        {error && <div style={{ color: '#b00020', marginTop: 12 }}>{error}</div>}
+        {mensaje && <div style={{ color: '#0a7b33', marginTop: 12 }}>{mensaje}</div>}
 
         <button
           type="submit"
@@ -216,7 +298,7 @@ export default function Formulario() {
             background: enviando ? '#aaa' : '#7c3aed',
             color: 'white',
             padding: '10px 16px',
-            borderRadius: 8
+            borderRadius: 8,
           }}
         >
           {enviando ? 'Enviando…' : 'Enviar'}
